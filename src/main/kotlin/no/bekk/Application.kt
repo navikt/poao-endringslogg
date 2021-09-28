@@ -25,7 +25,6 @@ fun Application.main() {
         host("localhost:3000")
         host("localhost:3333")
         host("localhost:6006")
-        host(CORS_ALLOWED_HOST, schemes = listOf("http", "https"))
         method(HttpMethod.Options)
         method(HttpMethod.Get)
         method(HttpMethod.Post)
@@ -40,7 +39,7 @@ fun main() {
     val flyway: Flyway = Flyway.configure().dataSource("jdbc:postgresql://$DB_HOST:$DB_PORT/$DB_DATABASE?reWriteBatchedInserts=true?sslmode=require", DB_USERNAME, DB_PASSWORD).load()
     flyway.migrate()
 
-    val client = SanityClient(SANITY_PROJECT_ID, SANITY_DATASET)
+    val client = SanityClient(SANITY_PROJECT_ID, "production")
 
     connectToDatabase()
 
@@ -50,7 +49,7 @@ fun main() {
             configureRouting(client)
         }
         connector {
-            port = BACKEND_PORT
+            port = 8080
             host = "0.0.0.0"
         }
     }) {
