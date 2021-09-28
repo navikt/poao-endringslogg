@@ -14,6 +14,7 @@ group = "no.bekk"
 version = "0.0.1"
 application {
     mainClass.set("no.bekk.ApplicationKt")
+    mainClassName = "no.bekk.ApplicationKt"
 }
 
 repositories {
