@@ -6,7 +6,7 @@ metadata:
   labels:
     team: pto
 spec:
-  image: { { image } }
+  image: {{ image }}
   gcp:
     sqlInstances:
       - type: POSTGRES_12
