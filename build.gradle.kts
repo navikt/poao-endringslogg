@@ -2,17 +2,11 @@ val ktor_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
 val exposed_version: String by project
-val DB_USERNAME: String = System.getenv("DB_USERNAME") ?: System.getenv("USER")
-val DB_PASSWORD = System.getenv("DB_PASSWORD") ?: ""
-val DB_HOST = System.getenv("DB_HOST") ?: "localhost"
-val DB_DATABASE = System.getenv("DB_DATABASE") ?: "endringslogg"
-val DB_PORT = System.getenv("DB_PORT") ?: "5432"
 
 plugins {
     application
     kotlin("jvm") version "1.5.21"
     kotlin("plugin.serialization") version "1.5.20"
-    id("org.flywaydb.flyway") version "8.0.0-beta2"
 }
 
 group = "no.bekk"
@@ -39,15 +33,8 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-java-time:$exposed_version")
     implementation("org.postgresql:postgresql:42.2.23")
     implementation("com.google.cloud.sql:postgres-socket-factory:1.3.3")
+    implementation("org.flywaydb:flyway-core:8.0.0-beta2")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
     testImplementation("com.h2database:h2:1.3.148")
-}
-
-flyway {
-    url = "jdbc:postgresql://$DB_HOST:$DB_PORT/$DB_DATABASE?reWriteBatchedInserts=true?sslmode=require"
-    driver = "org.postgresql.Driver"
-    user = DB_USERNAME
-    schemas = arrayOf("public")
-    password = DB_PASSWORD
 }

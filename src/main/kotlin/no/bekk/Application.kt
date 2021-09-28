@@ -10,6 +10,8 @@ import io.ktor.server.netty.*
 import kotlinx.serialization.json.Json
 import no.bekk.env.*
 import no.bekk.plugins.*
+import org.flywaydb.core.Flyway
+
 
 fun Application.main() {
     install(ContentNegotiation) {
@@ -35,6 +37,9 @@ fun Application.main() {
 }
 
 fun main() {
+    val flyway: Flyway = Flyway.configure().dataSource("jdbc:postgresql://$DB_HOST:$DB_PORT/$DB_DATABASE?reWriteBatchedInserts=true?sslmode=require", DB_USERNAME, DB_PASSWORD).load()
+    flyway.migrate()
+
     val client = SanityClient(SANITY_PROJECT_ID, SANITY_DATASET)
 
     connectToDatabase()
