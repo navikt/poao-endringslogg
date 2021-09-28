@@ -19,7 +19,7 @@ data class Endring(
     val seen: Boolean = false,
     val modal: Modal? = null,
     val projectId: String = SANITY_PROJECT_ID,
-    val dataset: String = SANITY_DATASET,
+    val dataset: String = "production",
     val apiHost: String = "https://cdn.sanity.io"
 )
 
