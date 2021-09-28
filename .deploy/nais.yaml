@@ -1,0 +1,18 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: endringslogg
+  namespace: pto
+  labels:
+    team: pto
+spec:
+  image: { { image } }
+  gcp:
+    sqlInstances:
+      - type: POSTGRES_12
+        databases:
+          - envVarPrefix: db
+          - name: poao-endringslogg
+  ingresses:
+    - https://poao-endringslogg.dev.nav.no
+    - https://poao-endringslogg.nav.no
