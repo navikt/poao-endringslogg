@@ -16,3 +16,4 @@ spec:
   ingresses:
     - https://poao-endringslogg.dev.nav.no
     - https://poao-endringslogg.nav.no
+    - https://poao-endringslogg.dev.adeo.no
