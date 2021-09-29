@@ -21,12 +21,12 @@ fun Application.main() {
         })
     }
     install(CORS) {
-        host("https://app.adeo.no/veilarbportefoljeflatefs")
-        host("https://veilarbportefoljeflatefs.nais.adeo.no")
-        host("https://veilarbportefoljeflatefs-q1.nais.preprod.local")
-        host("https://app-q1.adeo.no/veilarbportefoljeflatefs")
-        host("https://app-q1.dev.adeo.no/veilarbportefoljeflatefs")
-        host("https://endringslogg.sanity.studio")
+        host("app.adeo.no/veilarbportefoljeflatefs", listOf("https"))
+        host("veilarbportefoljeflatefs.nais.adeo.no", listOf("https"))
+        host("veilarbportefoljeflatefs-q1.nais.preprod.local", listOf("https"))
+        host("app-q1.adeo.no/veilarbportefoljeflatefs", listOf("https"))
+        host("app-q1.dev.adeo.no/veilarbportefoljeflatefs", listOf("https"))
+        host("endringslogg.sanity.studio", listOf("https"))
 
         method(HttpMethod.Get)
         method(HttpMethod.Post)
