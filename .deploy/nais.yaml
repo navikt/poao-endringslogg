@@ -14,6 +14,5 @@ spec:
           - envVarPrefix: db
             name: poao-endringslogg
   ingresses:
-    - https://poao-endringslogg.dev.nav.no
-    - https://poao-endringslogg.nav.no
-    - https://poao-endringslogg.dev.adeo.no
+    - https://poao-endringslogg.intern.nav.no
+    - https://poao-endringslogg.dev.intern.nav.no
