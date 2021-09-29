@@ -21,15 +21,15 @@ fun Application.main() {
         })
     }
     install(CORS) {
-        // TODO: correctly define allowed hosts. Env. vars or secrets?
-        host("localhost:3000")
-        host("localhost:3333")
-        host("localhost:6006")
-        method(HttpMethod.Options)
+        host("https://app.adeo.no/veilarbportefoljeflatefs")
+        host("https://veilarbportefoljeflatefs.nais.adeo.no")
+        host("https://veilarbportefoljeflatefs-q1.nais.preprod.local")
+        host("https://app-q1.adeo.no/veilarbportefoljeflatefs")
+        host("https://app-q1.dev.adeo.no/veilarbportefoljeflatefs")
+        host("https://endringslogg.sanity.studio")
+
         method(HttpMethod.Get)
         method(HttpMethod.Post)
-        method(HttpMethod.Put)
-        method(HttpMethod.Delete)
         method(HttpMethod.Patch)
         header(HttpHeaders.ContentType)
     }
