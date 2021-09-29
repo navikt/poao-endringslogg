@@ -21,11 +21,11 @@ fun Application.main() {
         })
     }
     install(CORS) {
-        host("app.adeo.no/veilarbportefoljeflatefs", listOf("https"))
+        host("app.adeo.no", listOf("https"))
         host("veilarbportefoljeflatefs.nais.adeo.no", listOf("https"))
         host("veilarbportefoljeflatefs-q1.nais.preprod.local", listOf("https"))
-        host("app-q1.adeo.no/veilarbportefoljeflatefs", listOf("https"))
-        host("app-q1.dev.adeo.no/veilarbportefoljeflatefs", listOf("https"))
+        host("app-q1.adeo.no", listOf("https"))
+        host("app-q1.dev.adeo.no", listOf("https"))
         host("endringslogg.sanity.studio", listOf("https"))
 
         method(HttpMethod.Options)
