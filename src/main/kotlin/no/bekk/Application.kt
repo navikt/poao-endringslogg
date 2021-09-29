@@ -28,6 +28,7 @@ fun Application.main() {
         host("app-q1.dev.adeo.no/veilarbportefoljeflatefs", listOf("https"))
         host("endringslogg.sanity.studio", listOf("https"))
 
+        method(HttpMethod.Options)
         method(HttpMethod.Get)
         method(HttpMethod.Post)
         method(HttpMethod.Patch)
