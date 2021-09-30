@@ -15,4 +15,4 @@ spec:
             name: poao-endringslogg
   ingresses:
     - https://poao-endringslogg.intern.nav.no
-    - https://poao-endringslogg.dev.intern.nav.no
+    - https://poao-endringslogg.nav.no
