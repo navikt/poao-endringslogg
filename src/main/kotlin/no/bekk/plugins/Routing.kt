@@ -16,9 +16,8 @@ fun Application.configureRouting(client: SanityClient) {
         post("/endringslogg") {
             val (userId, appId, maxEntries) = call.receive<BrukerData>()
             val entries = getSeenEntriesForUser(userId).map(UUID::toString).toSet()
-            val endringslogger = client.query("*[_type == '$appId'][0...$maxEntries]")
 
-            when(endringslogger) {
+            when(val endringslogger = client.query("*[_type == '$appId'][0...$maxEntries]")) {
                 is Ok -> {
                     if (endringslogger.value.result.isEmpty()){
                         call.response.status(HttpStatusCode(204, "Data for app $appId doesn't exist."))
