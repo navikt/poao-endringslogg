@@ -37,7 +37,7 @@ class SanityClient(
 
     private val queryCache: Cache<String, EndringJson> = Caffeine.newBuilder()
         .expireAfterWrite(1, TimeUnit.MINUTES)
-        .maximumSize(1000)
+        .maximumSize(50)
         .build()
 
     private suspend fun querySanity(queryString: String): Result<EndringJson, ClientRequestException> {
