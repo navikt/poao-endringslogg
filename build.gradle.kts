@@ -14,7 +14,7 @@ group = "no.bekk"
 version = "0.0.1"
 application {
     mainClass.set("no.bekk.ApplicationKt")
-    mainClassName = "no.bekk.ApplicationKt"
+    mainClassName = "no.bekk.ApplicationKt" // Need this while shadow plugin < 7
 }
 
 repositories {
@@ -36,6 +36,7 @@ dependencies {
     implementation("org.postgresql:postgresql:42.2.23")
     implementation("com.google.cloud.sql:postgres-socket-factory:1.3.3")
     implementation("org.flywaydb:flyway-core:8.0.0-beta2")
+    implementation("com.github.ben-manes.caffeine:caffeine:3.0.4")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
     testImplementation("com.h2database:h2:1.3.148")
