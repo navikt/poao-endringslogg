@@ -1,1 +1,1 @@
-rootProject.name = "no.bekk.endringslogg"
+rootProject.name = "no.pto.endringslogg"

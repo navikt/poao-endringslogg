@@ -1,6 +1,6 @@
-package no.bekk
+package no.pto
 
-import no.bekk.env.*
+import no.pto.env.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.`java-time`.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -23,6 +23,12 @@ object Seen : Table("seen") {
     val openedLink = bool("opened_link").default(false)
     val openedModal = bool("opened_modal").default(false)
     val timeStamp = timestamp("time_stamp")
+    override val primaryKey = PrimaryKey(userId, documentId)
+}
+
+object SeenForced: Table("seen_forced") {
+    val userId = varchar("user_id", 255)
+    val documentId = uuid("document_id")
     override val primaryKey = PrimaryKey(userId, documentId)
 }
 
@@ -51,12 +57,24 @@ fun getSeenEntriesForUser(userId: String): List<UUID> = transaction {
     Seen.select { Seen.userId eq sha256(userId) }.map { it[Seen.documentId] }
 }
 
+fun getSeenForcedEntriesForUser(userId: String): List<UUID> = transaction {
+    SeenForced.select { SeenForced.userId eq sha256(userId) }.map { it[SeenForced.documentId] }
+}
+
+
 fun insertSeenEntries(userId: String, appId: String, documentIds: List<UUID>) = transaction {
     Seen.batchInsert(documentIds, ignore = true) { docId ->
         this[Seen.userId] = sha256(userId)
         this[Seen.appId] = appId
         this[Seen.documentId] = docId
         this[Seen.timeStamp] = Instant.now().truncatedTo(ChronoUnit.SECONDS)
+
+    }
+}
+fun insertSeenForcedEntries(userId: String, documentIds: List<UUID>) = transaction {
+    SeenForced.batchInsert(documentIds, ignore = true) { docId ->
+        this[SeenForced.userId] = sha256(userId)
+        this[SeenForced.documentId] = docId
 
     }
 }
@@ -93,7 +111,7 @@ fun getAllEntriesInSeen() = transaction {
 fun getAllEntriesInUserSessions(appId: String) = transaction {
     UserSession.select{ UserSession.appId eq appId }
         .map { UserSessionClass(it[UserSession.userId], it[UserSession.appId], it[UserSession.duration], it[UserSession.unseenFields], it[UserSession.timeStamp].toString())}
-    }
+}
 
 fun getSeenEntriesForDocId(docId: String) = transaction {
     Seen.select { Seen.documentId eq UUID.fromString(docId) }
@@ -111,10 +129,10 @@ FROM user_session WHERE (user_session.app_id = appId) AND (user_session.duration
 GROUP BY CAST(user_session.time_stamp AS DATE)
 ORDER BY CAST(user_session.time_stamp AS DATE) ASC
  */
-fun getUniqueVisitorsPerDayForAppId(appId: String, moreThanMs: Int) = transaction {
+fun getUniqueVisitorsPerDayForAppId(appId: String, moreThanMs: Int, lessThanMs: Int) = transaction {
     UserSession
         .slice(UserSession.timeStamp.castTo<LocalDate>(JavaLocalDateColumnType()), UserSession.userId.count())
-        .select { (UserSession.appId eq appId) and (UserSession.duration greater moreThanMs) }
+        .select { (UserSession.appId eq appId) and (UserSession.duration greaterEq moreThanMs) and (UserSession.duration lessEq lessThanMs ) }
         .groupBy(UserSession.timeStamp.castTo<LocalDate>(JavaLocalDateColumnType()))
         .orderBy(UserSession.timeStamp.castTo<LocalDate>(JavaLocalDateColumnType()) to SortOrder.ASC)
         .withDistinct().map {

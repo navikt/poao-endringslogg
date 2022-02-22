@@ -1,10 +1,13 @@
-package no.bekk
+package no.pto
 
 import ModalSerializer
+import SlideSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
-import no.bekk.env.*
+import com.launchdarkly.eventsource.EventSource
+import no.pto.env.*
 
 @Serializable
 data class EndringJson(val result: List<Endring>)
@@ -17,9 +20,10 @@ data class Endring(
     val linkAttributes: LinkAttributes? = null,
     @SerialName("_id") val id: String,
     val seen: Boolean = false,
+    val seenForced: Boolean = false,
+    val forcedModal: Boolean? = false,
     val modal: Modal? = null,
     val projectId: String = SANITY_PROJECT_ID,
-    val dataset: String = "production",
     val apiHost: String = "https://cdn.sanity.io"
 )
 
@@ -28,19 +32,30 @@ data class LinkAttributes(val link: String? = null, val linkText: String? = null
 
 typealias BlockContent = JsonElement
 
+@OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
 @Serializable(with = ModalSerializer::class)
-data class Modal(val title: String, val slides: List<Slide>)
+data class Modal(val title: String, val forcedModal: Boolean, val slides: List<Slide>)
 
-@Serializable
+
+@Serializable sealed class SlideImage {
+
+    abstract val type: String
+}
+
+@Serializable class SlideImageJson(val slideImage: JsonElement, override val type: String = "json") : SlideImage()
+@Serializable class SlideImageDl(val slideImage: ByteArray, override val type: String = "dl") : SlideImage()
+
+@OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
+@Serializable(with = SlideSerializer::class)
 data class Slide(
     @SerialName("slideHeader") val header: String,
-    @SerialName("slideDescription") val description: BlockContent? = null,
-    @SerialName("slideImage") val image: JsonElement? = null,
+    @SerialName("slideDescription") val description: JsonArray? = null,
+    @SerialName("slideImage") val image: SlideImage?,
     @SerialName("altText") val altText: String? = null,
 )
 
 @Serializable
-data class BrukerData(val userId: String, val appId: String, val maxEntries: Int)
+data class BrukerData(val userId: String, val appId: String, val dataset: String, val maxEntries: Int)
 
 @Serializable
 data class SeenStatus(
@@ -50,12 +65,20 @@ data class SeenStatus(
 )
 
 @Serializable
+data class SeenForcedStatus(
+    val userId: String,
+    val documentIds: List<String>
+)
+
+
+@Serializable
 data class SessionDuration(
     val userId: String,
     val appId: String,
     val duration: Int,
     val unseenFields: Int
 )
+
 
 @Serializable
 data class SeenWithTime(
@@ -70,7 +93,7 @@ data class SeenDataClass(
     val documentId: String,
     val openedLink: Boolean,
     val openedModal: Boolean,
-    val timeStamp: String
+    val timeStamp: String,
 )
 
 @Serializable
@@ -91,4 +114,20 @@ data class UniqueSessionsPerDay(
 @Serializable
 data class DocumentId(
     val documentId: String,
+)
+
+@Serializable
+data class UniqueUsersPerDay(
+    val appId: String,
+    val moreThanMs: String,
+    val lessThanMs: String
+)
+
+data class SubscribedApp(
+    val listenURL: String,
+    val queryString: String,
+    val dataset: String,
+    val cacheKey: String,
+    val eventSource: EventSource,
+    var connectionEstablished: Boolean = false
 )

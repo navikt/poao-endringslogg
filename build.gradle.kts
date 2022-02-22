@@ -2,19 +2,20 @@ val ktor_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
 val exposed_version: String by project
+val logstash_encoder_version: String by project
 
 plugins {
     application
-    kotlin("jvm") version "1.5.21"
-    kotlin("plugin.serialization") version "1.5.20"
+    kotlin("jvm") version "1.6.10"
+    kotlin("plugin.serialization") version "1.6.10"
     id("com.github.johnrengelman.shadow") version "6.1.0"
 }
 
-group = "no.bekk"
+group = "no.nav.pto"
 version = "0.0.1"
 application {
-    mainClass.set("no.bekk.ApplicationKt")
-    mainClassName = "no.bekk.ApplicationKt" // Need this while shadow plugin < 7
+    mainClass.set("no.pto.ApplicationKt")
+    mainClassName = "no.pto.ApplicationKt" // Need this while shadow plugin < 7
 }
 
 repositories {
@@ -25,8 +26,9 @@ dependencies {
     implementation("io.ktor:ktor-server-core:$ktor_version")
     implementation("io.ktor:ktor-server-netty:$ktor_version")
     implementation("ch.qos.logback:logback-classic:$logback_version")
-    implementation("io.ktor:ktor-client-core:1.6.2")
-    implementation("io.ktor:ktor-client-cio:1.6.2")
+    implementation("net.logstash.logback:logstash-logback-encoder:$logstash_encoder_version")
+    implementation("io.ktor:ktor-client-core:1.6.7")
+    implementation("io.ktor:ktor-client-cio:1.6.7")
     implementation("io.ktor:ktor-serialization:$ktor_version")
     implementation("io.ktor:ktor-client-serialization:$ktor_version")
     implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
@@ -37,6 +39,7 @@ dependencies {
     implementation("com.google.cloud.sql:postgres-socket-factory:1.3.3")
     implementation("org.flywaydb:flyway-core:8.0.0-beta2")
     implementation("com.github.ben-manes.caffeine:caffeine:3.0.4")
+    implementation("com.launchdarkly:okhttp-eventsource:2.3.2")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
     testImplementation("com.h2database:h2:1.3.148")
@@ -45,7 +48,7 @@ dependencies {
 tasks{
     shadowJar {
         manifest {
-            attributes(Pair("Main-Class", "no.bekk.ApplicationKt"))
+            attributes(Pair("Main-Class", "no.pto.ApplicationKt"))
         }
     }
 }
