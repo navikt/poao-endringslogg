@@ -1,4 +1,4 @@
-name: Build-Deploy prod
+name: Build-Deploy dev
 on:
   push:
     branches:
@@ -34,15 +34,14 @@ jobs:
           docker build --tag ${IMAGE} .
           docker push ${IMAGE}
   deploy:
-    name: Deploy to prod-gcp
+    name: Deploy to dev-gcp
     needs: build
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v1
-      - name: Deploy til prod-gcp
+      - name: Deploy til dev-gcp
         uses: nais/deploy/actions/deploy@v1
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-          CLUSTER: prod-gcp
-          RESOURCE: .deploy/nais-prod.yaml
+          CLUSTER: dev-gcp
+          RESOURCE: .deploy/nais-dev.yaml
