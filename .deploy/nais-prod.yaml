@@ -9,7 +9,8 @@ spec:
   image: {{ image }}
   gcp:
     sqlInstances:
-      - type: POSTGRES_12
+      - cascadingDelete: true
+        type: POSTGRES_12
         databases:
           - envVarPrefix: DB
             name: poao-endringslogg
