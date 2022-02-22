@@ -9,10 +9,9 @@ spec:
   image: {{ image }}
   gcp:
     sqlInstances:
-      - type: POSTGRES_12
+      - type: POSTGRES_14
         databases:
-          - envVarPrefix: db
-            name: poao-endringslogg
+          - envVarPrefix: DB
+          - name: poao-endringslogg
   ingresses:
-    - https://poao-endringslogg.intern.nav.no
-    - https://poao-endringslogg.nav.no
+    - https://poao-endringslogg.dev.intern.nav.no
