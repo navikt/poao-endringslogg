@@ -1,4 +1,4 @@
-package no.bekk
+package no.pto
 
 import SanityClient
 import io.ktor.application.*
@@ -8,10 +8,12 @@ import io.ktor.http.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import kotlinx.serialization.json.Json
-import no.bekk.env.*
-import no.bekk.plugins.*
+import no.pto.env.*
+import no.pto.plugins.*
 import org.flywaydb.core.Flyway
+import org.slf4j.LoggerFactory
 
+private val logger = LoggerFactory.getLogger("no.nav.pto.endringslogg.Application")
 
 fun Application.main() {
     install(ContentNegotiation) {
@@ -37,7 +39,12 @@ fun Application.main() {
 }
 
 fun main() {
-    val flyway: Flyway = Flyway.configure().dataSource("jdbc:postgresql://$DB_HOST:$DB_PORT/$DB_DATABASE?reWriteBatchedInserts=true?sslmode=require", DB_USERNAME, DB_PASSWORD).load()
+    logger.info("Kjører flyway")
+    val flyway: Flyway = Flyway.configure().dataSource(
+        "jdbc:postgresql://$DB_HOST:$DB_PORT/$DB_DATABASE?reWriteBatchedInserts=true?sslmode=require",
+        DB_USERNAME,
+        DB_PASSWORD
+    ).load()
     flyway.migrate()
 
     val client = SanityClient(SANITY_PROJECT_ID, "production")
