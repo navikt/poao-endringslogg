@@ -2,7 +2,8 @@ package no.pto
 
 import no.pto.env.*
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.`java-time`.*
+import org.jetbrains.exposed.sql.javatime.JavaLocalDateColumnType
+import org.jetbrains.exposed.sql.javatime.timestamp
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.security.MessageDigest
 import java.time.*
