@@ -12,6 +12,6 @@ spec:
       - type: POSTGRES_14
         databases:
           - envVarPrefix: DB
-            name: poao-endringslogg
+            name: poao-endringslogg-v2
   ingresses:
     - https://poao-endringslogg.intern.nav.no
