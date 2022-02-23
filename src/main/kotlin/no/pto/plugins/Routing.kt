@@ -21,7 +21,6 @@ val logger: Logger = LoggerFactory.getLogger("no.nav.pto.endringlogg.routing")
 fun Application.configureRouting(client: SanityClient) {
     routing {
         post("/endringslogg") {
-            logger.info("Henter ut endringslogg")
             val (userId, appId, dataset, maxEntries) = call.receive<BrukerData>()
             val seenEntryIds = getSeenEntriesForUser(userId).map(UUID::toString).toSet()
             val seenForcedEntryIds = getSeenForcedEntriesForUser(userId).map(UUID::toString).toSet()
@@ -30,7 +29,11 @@ fun Application.configureRouting(client: SanityClient) {
             val publiserteMedlingerQuery = "*[_type=='$appId'][0...$maxEntries][publisert]"
 
             val query = if (erIDev()) alleMeldingerQuery else publiserteMedlingerQuery
-
+            if(erIDev()){
+                logger.info("Henter ut alle endringslogger")
+            }else {
+                logger.info("Henter ut publiserte endringslogger")
+            }
             val queryStringEncoded = URLEncoder.encode(query, "utf-8")
             when (val endringslogger = client.query(queryStringEncoded, dataset)) {
                 is Ok -> {
