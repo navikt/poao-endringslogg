@@ -9,9 +9,10 @@ spec:
   image: {{ image }}
   gcp:
     sqlInstances:
-      - type: POSTGRES_14
+      - name: endringslogg-v2
+        type: POSTGRES_14
         databases:
           - envVarPrefix: DB
-            name: poao-endringslogg-v2
+            name: poao-endringslogg
   ingresses:
     - https://poao-endringslogg.intern.nav.no
