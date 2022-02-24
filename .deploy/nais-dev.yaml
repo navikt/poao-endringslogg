@@ -9,8 +9,7 @@ spec:
   image: {{ image }}
   gcp:
     sqlInstances:
-      - name: endringslogg
-        cascadingDelete: true
+      - name: endringslogg-v2
         type: POSTGRES_14
         databases:
           - envVarPrefix: DB
