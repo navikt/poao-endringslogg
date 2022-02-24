@@ -10,6 +10,7 @@ spec:
   gcp:
     sqlInstances:
       - name: endringslogg
+        cascadingDelete: true
         type: POSTGRES_14
         databases:
           - envVarPrefix: DB
