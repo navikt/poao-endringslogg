@@ -13,6 +13,6 @@ spec:
         type: POSTGRES_14
         databases:
           - envVarPrefix: DB
-            name: poao-endringslogg
+            name: endringslogg
   ingresses:
     - https://poao-endringslogg.intern.nav.no
