@@ -13,10 +13,10 @@ import no.pto.env.erIDev
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URLEncoder
+import java.nio.charset.Charset
 import java.util.*
 
 val logger: Logger = LoggerFactory.getLogger("no.nav.pto.endringlogg.routing")
-
 
 fun Application.configureRouting(client: SanityClient) {
     routing {
@@ -34,7 +34,7 @@ fun Application.configureRouting(client: SanityClient) {
             }else {
                 logger.info("Henter ut publiserte endringslogger")
             }
-            val queryStringEncoded = URLEncoder.encode(query, "utf-8")
+            val queryStringEncoded = URLEncoder.encode(query, Charset.forName("utf-8"))
             when (val endringslogger = client.query(queryStringEncoded, dataset)) {
                 is Ok -> {
                     if (endringslogger.value.result.isEmpty()) {
@@ -64,62 +64,49 @@ fun Application.configureRouting(client: SanityClient) {
         post("/analytics/sett-endringer") {
             val seen = call.receive<SeenStatus>()
             insertSeenEntries(seen.userId, seen.appId, seen.documentIds.map(UUID::fromString))
-            call.respond(HttpStatusCode.OK) // TODO: Return status for insert
+            call.respond(HttpStatusCode.OK)
         }
 
         post("/analytics/seen-forced-modal") {
             val seen = call.receive<SeenForcedStatus>()
             insertSeenForcedEntries(seen.userId, seen.documentIds.map(UUID::fromString))
-            call.respond(HttpStatusCode.OK) // TODO: Return status for insert
+            call.respond(HttpStatusCode.OK)
         }
 
         post("/analytics/session-duration") {
             val duration = call.receive<SessionDuration>()
-            insertSessionDuration(duration)
-            call.respond(HttpStatusCode.OK) // TODO: Return status for insert
+            // TODO: report to prometheus
+            call.respond(HttpStatusCode.OK)
         }
         patch("/analytics/modal-open") {
             val id = call.receive<DocumentId>()
-            setModalOpen(id.documentId)
-            call.respond(HttpStatusCode.OK) // TODO: Return status for insert
+            // TODO: report to prometheus
+            call.respond(HttpStatusCode.OK)
         }
         patch("/analytics/link-click") {
             val id = call.receive<DocumentId>()
-            setLinkClicked(id.documentId)
-            call.respond(HttpStatusCode.OK) // TODO: Return status for insert
+            // TODO: report to prometheus
+            call.respond(HttpStatusCode.OK)
         }
 
 
         get("/data/seen-all") {
-            call.respond(getAllEntriesInSeen())
+            call.respond(HttpStatusCode.Gone)
         }
         get("/data/seen-app") {
-
-            call.request.queryParameters["appId"]?.let {
-                call.respond(getSeenEntriesForAppId(it))
-            } ?: call.respond(HttpStatusCode.BadRequest)
+            call.respond(HttpStatusCode.Gone)
         }
 
         get("/data/seen") {
-            call.request.queryParameters["docId"]?.let {
-                call.respond(getSeenEntriesForDocId(it))
-            } ?: call.respond(HttpStatusCode.BadRequest)
+            call.respond(HttpStatusCode.Gone)
         }
 
         get("data/user-session-all") {
-            call.request.queryParameters["appId"]?.let {
-                call.respond(getAllEntriesInUserSessions(it))
-            } ?: call.respond(HttpStatusCode.BadRequest)
+            call.respond(HttpStatusCode.Gone)
         }
 
         get("data/unique-user-sessions-per-day") {
-            call.request.queryParameters["appId"]?.let { appId ->
-                call.request.queryParameters["moreThanMs"]?.let { moreThan ->
-                    call.request.queryParameters["lessThanMs"]?.let { lessThan ->
-                        call.respond(getUniqueVisitorsPerDayForAppId(appId, moreThan.toInt(), lessThan.toInt()))
-                    } ?: call.respond(HttpStatusCode.BadRequest)
-                } ?: call.respond(HttpStatusCode.BadRequest)
-            } ?: call.respond(HttpStatusCode.BadRequest)
+            call.respond(HttpStatusCode.Gone)
         }
     }
 }

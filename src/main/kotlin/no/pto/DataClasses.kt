@@ -38,7 +38,6 @@ data class Modal(val title: String, val forcedModal: Boolean, val slides: List<S
 
 
 @Serializable sealed class SlideImage {
-
     abstract val type: String
 }
 
@@ -55,7 +54,12 @@ data class Slide(
 )
 
 @Serializable
-data class BrukerData(val userId: String, val appId: String, val dataset: String, val maxEntries: Int)
+data class BrukerData(
+    val userId: String,
+    val appId: String,
+    val dataset: String,
+    val maxEntries: Int
+)
 
 @Serializable
 data class SeenStatus(
@@ -79,48 +83,9 @@ data class SessionDuration(
     val unseenFields: Int
 )
 
-
-@Serializable
-data class SeenWithTime(
-    val userId: String,
-    val documentId: String,
-    val timeStamp: String
-)
-
-@Serializable
-data class SeenDataClass(
-    val userId: String,
-    val documentId: String,
-    val openedLink: Boolean,
-    val openedModal: Boolean,
-    val timeStamp: String,
-)
-
-@Serializable
-data class UserSessionClass(
-    val userId: String,
-    val appId: String,
-    val duration: Int,
-    val unseenFields: Int,
-    val timeStamp: String,
-)
-
-@Serializable
-data class UniqueSessionsPerDay(
-    val date: String,
-    val users: Long
-)
-
 @Serializable
 data class DocumentId(
     val documentId: String,
-)
-
-@Serializable
-data class UniqueUsersPerDay(
-    val appId: String,
-    val moreThanMs: String,
-    val lessThanMs: String
 )
 
 data class SubscribedApp(
