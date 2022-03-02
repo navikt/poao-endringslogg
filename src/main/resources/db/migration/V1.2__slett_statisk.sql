@@ -1,1 +1,1 @@
-DELETE TABLE user_session;
+drop table user_session;
