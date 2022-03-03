@@ -108,9 +108,6 @@ class SanityClient(
         runBlocking {
             response = client.get("$baseUrl/data/query/production?query=$queryString")
         }
-        val listenUrl = "$baseUrl/data/listen/production?query=$queryString&includeResult=false&visibility=query"
-
-        sanityListenerSystemMelding.subscribeToSanityApp(listenUrl, queryString)
         return response.result
     }
 
