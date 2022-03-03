@@ -13,6 +13,7 @@ import no.pto.env.getEndringsloggPoaoQuery
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.*
+import kotlin.math.min
 
 val logger: Logger = LoggerFactory.getLogger("no.nav.pto.endringlogg.routing")
 val endringsloggPoaoqQuery: String = getEndringsloggPoaoQuery()
@@ -21,7 +22,7 @@ fun Application.configureEndringsloggRouting(client: SanityClient) {
     routing {
         post("/endringslogg") {
             val (userId, appId, _, maxEntries) = call.receive<BrukerData>()
-            if(appId != "afolg"){
+            if (appId != "afolg") {
                 call.respond(HttpStatusCode.NotImplemented)
             }
             val seenEntryIds = getSeenEntriesForUser(userId).map(UUID::toString).toSet()
@@ -38,7 +39,7 @@ fun Application.configureEndringsloggRouting(client: SanityClient) {
                                 seenForced = it.id in seenForcedEntryIds,
                                 forcedModal = it.modal?.forcedModal
                             )
-                        }.subList(0, maxEntries))
+                        }.subList(0, min(maxEntries, endringslogger.value.result.size)))
                     }
                 }
                 is Err -> {
