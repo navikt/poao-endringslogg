@@ -18,7 +18,7 @@ import java.util.*
 
 val logger: Logger = LoggerFactory.getLogger("no.nav.pto.endringlogg.routing")
 
-fun Application.configureRouting(client: SanityClient) {
+fun Application.configureEndringsloggRouting(client: SanityClient) {
     routing {
         post("/endringslogg") {
             val (userId, appId, dataset, maxEntries) = call.receive<BrukerData>()
@@ -35,7 +35,7 @@ fun Application.configureRouting(client: SanityClient) {
                 logger.info("Henter ut publiserte endringslogger")
             }
             val queryStringEncoded = URLEncoder.encode(query, Charset.forName("utf-8"))
-            when (val endringslogger = client.query(queryStringEncoded, dataset)) {
+            when (val endringslogger = client.queryEndringslogg(queryStringEncoded, dataset)) {
                 is Ok -> {
                     if (endringslogger.value.result.isEmpty()) {
                         call.response.status(HttpStatusCode(204, "Data for app $appId doesn't exist."))
@@ -96,15 +96,12 @@ fun Application.configureRouting(client: SanityClient) {
         get("/data/seen-app") {
             call.respond(HttpStatusCode.Gone)
         }
-
         get("/data/seen") {
             call.respond(HttpStatusCode.Gone)
         }
-
         get("data/user-session-all") {
             call.respond(HttpStatusCode.Gone)
         }
-
         get("data/unique-user-sessions-per-day") {
             call.respond(HttpStatusCode.Gone)
         }

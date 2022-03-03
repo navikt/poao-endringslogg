@@ -47,13 +47,14 @@ fun main() {
     ).load()
     flyway.migrate()
 
-    val client = SanityClient(SANITY_PROJECT_ID, "production")
+    val client = SanityClient(SANITY_PROJECT_ID)
     connectToDatabase()
 
     embeddedServer(Netty, environment = applicationEngineEnvironment {
         module {
             main()
-            configureRouting(client)
+            configureEndringsloggRouting(client)
+            configureSystemmeldingRouting(client)
         }
         connector {
             port = 8080
