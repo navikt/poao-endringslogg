@@ -5,28 +5,21 @@ import com.launchdarkly.eventsource.ConnectionErrorHandler
 import com.launchdarkly.eventsource.EventHandler
 import com.launchdarkly.eventsource.EventSource
 import com.launchdarkly.eventsource.MessageEvent
-import no.pto.env.erIProd
 import okhttp3.internal.http2.StreamResetException
 import org.slf4j.LoggerFactory
 import java.net.URI
-import java.net.URLEncoder
-import java.nio.charset.Charset
-import java.time.*
-import java.time.temporal.TemporalAdjusters
+import java.time.Duration
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-
-private val logger = LoggerFactory.getLogger("no.nav.pto.endringslogg.Application")
+private val logger = LoggerFactory.getLogger("no.nav.pto.endringslogg.MessageEventHandler")
 private var subscribedApps: HashMap<String, SubscribedApp> = hashMapOf()
 
 
-/* Class to handle events from EventHandler */
 class MessageEventHandler<V : Any?>(
-    val cache: Cache<String, V>,
-    val updateQuery: (query: String) -> V
+    private val cache: Cache<String, V>,
+    private val updateQuery: (query: String) -> V
 ) : EventHandler {
-
     fun subscribeToSanityApp(listenUrl: String, queryString: String) {
         logger.info("Starter å lytte på: {}", queryString)
         val eventHandler = MessageEventHandler(cache, updateQuery)
@@ -35,21 +28,20 @@ class MessageEventHandler<V : Any?>(
             .connectionErrorHandler(SanityConnectionErrorHandler())
             .build()
 
-        eventSource.start()
         if (subscribedApps.containsKey(listenUrl)) {
             logger.warn("lytter allerde til: {}", queryString)
-            eventSource.close()
+            return
         } else {
             subscribedApps[listenUrl] = SubscribedApp(listenUrl, queryString, eventSource)
         }
+        eventSource.start()
 
         // Schedule task to ensure that connection has been established. If not, remove data from cache
         Executors.newSingleThreadScheduledExecutor().schedule({
             if (!subscribedApps[listenUrl]?.connectionEstablished!!) {
-                logger.warn("Connection to $listenUrl not established.")
                 subscribedApps[listenUrl]?.eventSource?.close()
                 cache.asMap().remove(subscribedApps[listenUrl]?.queryString)
-                logger.error("Klarte ikke å starte lytting mot: {}", queryString)
+                logger.error("Klarte ikke å starte lytting mot: {}, prøver igjen...", queryString)
                 subscribeToSanityApp(listenUrl, queryString)
             }
         }, 20, TimeUnit.SECONDS)
@@ -70,16 +62,6 @@ class MessageEventHandler<V : Any?>(
         val origin = messageEvent.origin.toString()
         when (event) {
             "welcome" -> { // connection is established
-                // cancels subscription, and clears cache every Saturday morning 01.00 UTC time
-                if (!subscribedApps[origin]!!.connectionEstablished) {
-                    Executors.newSingleThreadScheduledExecutor().schedule({
-                        subscribedApps[origin]?.connectionEstablished = false
-                        subscribedApps[origin]?.eventSource?.close()
-                        cache.asMap().remove(subscribedApps[origin]?.queryString)
-                        subscribedApps.remove(origin)
-                        logger.info("Unsubscribed from listening API: $origin")
-                    }, msToNextDay(DayOfWeek.SATURDAY, 1), TimeUnit.MILLISECONDS)
-                }
                 subscribedApps[origin]?.connectionEstablished = true
                 logger.info("Subscribing to listening API: $origin")
             }
@@ -132,19 +114,5 @@ private class SanityConnectionErrorHandler : ConnectionErrorHandler {
         } else {
             ConnectionErrorHandler.Action.SHUTDOWN
         }
-    }
-}
-
-/* calculates milliseconds from now until next given weekday with hourly offset in UTC time */
-private fun msToNextDay(dayOfWeek: DayOfWeek, hourOffset: Long): Long {
-    val nextDay = LocalDate.now(Clock.systemUTC())
-        .with(TemporalAdjusters.nextOrSame(dayOfWeek))
-        .atStartOfDay()
-        .plusHours(hourOffset)
-    val duration = Duration.between(LocalDateTime.now(Clock.systemUTC()), nextDay).toMillis()
-    return if (duration < 0) {
-        duration + TimeUnit.DAYS.toMillis(7)  // add one week if calculated duration is negative
-    } else {
-        duration
     }
 }

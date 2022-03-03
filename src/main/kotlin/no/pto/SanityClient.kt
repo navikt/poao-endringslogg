@@ -32,7 +32,7 @@ private val endringsloggCache: Cache<String, EndringJson> = Caffeine.newBuilder(
     .maximumSize(100)
     .build()
 
-private val systemmeldingCache: Cache<String, List<SystemmeldingSanity>> = Caffeine.newBuilder()
+private val systemmeldingCache: Cache<String, SystemmeldingSanityRespons> = Caffeine.newBuilder()
     .expireAfterWrite(1000, TimeUnit.HOURS) // Cache skal bli oppdatert av sanity client
     .maximumSize(100)
     .build()
@@ -69,7 +69,7 @@ class SanityClient(
         }
     }
 
-    fun querySystemmelding(queryString: String): Result<List<SystemmeldingSanity>, ClientRequestException> {
+    fun querySystemmelding(queryString: String): Result<SystemmeldingSanityRespons, ClientRequestException> {
         return tryCacheFirst(systemmeldingCache, queryString) { query ->
             querySanitySystemmelding(query)
         }
@@ -102,13 +102,13 @@ class SanityClient(
     }
 
     @Throws(ClientRequestException::class)
-    private fun querySanitySystemmelding(queryString: String): List<SystemmeldingSanity> {
+    private fun querySanitySystemmelding(queryString: String): SystemmeldingSanityRespons {
         logger.info("Gjør kall mot sanity...")
         val response: SystemmeldingSanityRespons
         runBlocking {
             response = client.get("$baseUrl/data/query/production?query=$queryString")
         }
-        return response.result
+        return response
     }
 
     private fun imageObjToByteArray(obj: JsonObject): ByteArray {

@@ -19,14 +19,14 @@ fun Application.configureSystemmeldingRouting(client: SanityClient) {
     routing {
         get("/systemmeldinger") {
             logger.info("Henter ut alle alerts, prod: {}", erIProd())
-
             when (val systemmeldinger = client.querySystemmelding(systemmeldingerPoaoQuery)) {
                 is Ok -> {
-                    if (systemmeldinger.value.isEmpty()) {
+                    val result = systemmeldinger.value.result
+                    if (result.isEmpty()) {
                         call.response.status(HttpStatusCode(200, "Ingen data"))
                         call.respond(listOf<Systemmelding>())
                     } else {
-                        val aktiveSystemmeldinger = filtrerSystemmeldinger(systemmeldinger)
+                        val aktiveSystemmeldinger = filtrerSystemmeldinger(result)
                         call.respond(aktiveSystemmeldinger)
                     }
                 }
@@ -44,8 +44,8 @@ fun Application.configureSystemmeldingRouting(client: SanityClient) {
     }
 }
 
-fun filtrerSystemmeldinger(systemmeldinger: Ok<List<SystemmeldingSanity>>): List<Systemmelding> {
-    return systemmeldinger.value
+private fun filtrerSystemmeldinger(systemmeldinger: List<SystemmeldingSanity>): List<Systemmelding> {
+    return systemmeldinger
         .filter { it.fraDato == null || ZonedDateTime.parse(it.fraDato).isBefore(ZonedDateTime.now()) }
         .filter { it.tilDato == null || ZonedDateTime.parse(it.tilDato).isAfter(ZonedDateTime.now()) }
         .map {
