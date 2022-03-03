@@ -91,8 +91,6 @@ data class DocumentId(
 data class SubscribedApp(
     val listenURL: String,
     val queryString: String,
-    val dataset: String,
-    val cacheKey: String,
     val eventSource: EventSource,
     var connectionEstablished: Boolean = false
 )

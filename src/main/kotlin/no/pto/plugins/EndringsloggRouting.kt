@@ -9,33 +9,25 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import no.pto.*
-import no.pto.env.erIDev
+import no.pto.env.getEndringsloggPoaoQuery
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.net.URLEncoder
-import java.nio.charset.Charset
 import java.util.*
 
 val logger: Logger = LoggerFactory.getLogger("no.nav.pto.endringlogg.routing")
+val endringsloggPoaoqQuery: String = getEndringsloggPoaoQuery()
 
 fun Application.configureEndringsloggRouting(client: SanityClient) {
     routing {
         post("/endringslogg") {
-            val (userId, appId, dataset, maxEntries) = call.receive<BrukerData>()
+            val (userId, appId, _, maxEntries) = call.receive<BrukerData>()
+            if(appId != "afolg"){
+                call.respond(HttpStatusCode.NotImplemented)
+            }
             val seenEntryIds = getSeenEntriesForUser(userId).map(UUID::toString).toSet()
             val seenForcedEntryIds = getSeenForcedEntriesForUser(userId).map(UUID::toString).toSet()
 
-            val alleMeldingerQuery = "*[_type=='$appId'][0...$maxEntries]"
-            val publiserteMedlingerQuery = "*[_type=='$appId'][0...$maxEntries][publisert]"
-
-            val query = if (erIDev()) alleMeldingerQuery else publiserteMedlingerQuery
-            if(erIDev()){
-                logger.info("Henter ut alle endringslogger")
-            }else {
-                logger.info("Henter ut publiserte endringslogger")
-            }
-            val queryStringEncoded = URLEncoder.encode(query, Charset.forName("utf-8"))
-            when (val endringslogger = client.queryEndringslogg(queryStringEncoded, dataset)) {
+            when (val endringslogger = client.queryEndringslogg(endringsloggPoaoqQuery)) {
                 is Ok -> {
                     if (endringslogger.value.result.isEmpty()) {
                         call.response.status(HttpStatusCode(204, "Data for app $appId doesn't exist."))
@@ -46,7 +38,7 @@ fun Application.configureEndringsloggRouting(client: SanityClient) {
                                 seenForced = it.id in seenForcedEntryIds,
                                 forcedModal = it.modal?.forcedModal
                             )
-                        })
+                        }.subList(0, maxEntries))
                     }
                 }
                 is Err -> {

@@ -8,22 +8,19 @@ import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import no.pto.env.erIProd
+import no.pto.env.getSystemmeldingPoaoQuery
 import no.pto.model.Systemmelding
 import no.pto.model.SystemmeldingSanity
-import java.net.URLEncoder
-import java.nio.charset.Charset
 import java.time.ZonedDateTime
 
-val q1MeldingerQuery = URLEncoder.encode("*[_type=='alert_overiskten'][0...100][publisert_q1]", Charset.forName("utf-8"))
-val prodMedlingerQuery = URLEncoder.encode("*[_type=='alert_overiskten'][0...100][publisert]", Charset.forName("utf-8"))
+val systemmeldingerPoaoQuery: String = getSystemmeldingPoaoQuery()
 
 fun Application.configureSystemmeldingRouting(client: SanityClient) {
     routing {
         get("/systemmeldinger") {
-            val query = if (erIProd()) prodMedlingerQuery else q1MeldingerQuery
             logger.info("Henter ut alle alerts, prod: {}", erIProd())
 
-            when (val systemmeldinger = client.querySystemmelding(query)) {
+            when (val systemmeldinger = client.querySystemmelding(systemmeldingerPoaoQuery)) {
                 is Ok -> {
                     if (systemmeldinger.value.isEmpty()) {
                         call.response.status(HttpStatusCode(200, "Ingen data"))

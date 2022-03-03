@@ -44,6 +44,17 @@ class SanityClient(
     private val sanityListenerEndringlogg = MessageEventHandler(endringsloggCache, this::querySanityEndringslogg)
     private val sanityListenerSystemMelding = MessageEventHandler(systemmeldingCache, this::querySanitySystemmelding)
 
+    fun initSanityEndringloggListener(queryString: String) {
+        val listenUrl = "$baseUrl/data/listen/production?query=$queryString&includeResult=false&visibility=query"
+        sanityListenerEndringlogg.subscribeToSanityApp(listenUrl, queryString)
+    }
+
+
+    fun initSanitySystemMeldingListener(queryString: String) {
+        val listenUrl = "$baseUrl/data/listen/production?query=$queryString&includeResult=false&visibility=query"
+        sanityListenerSystemMelding.subscribeToSanityApp(listenUrl, queryString)
+    }
+
     private val client = HttpClient(CIO) {
         install(JsonFeature) {
             serializer = KotlinxSerializer(kotlinx.serialization.json.Json {
@@ -53,25 +64,23 @@ class SanityClient(
         }
     }
 
-    fun queryEndringslogg(queryString: String, dataset: String): Result<EndringJson, ClientRequestException> {
-        return tryCacheFirst(endringsloggCache, queryString, dataset) { q, d ->
-            querySanityEndringslogg(q, d)
+    fun queryEndringslogg(queryString: String): Result<EndringJson, ClientRequestException> {
+        return tryCacheFirst(endringsloggCache, queryString) { query ->
+            querySanityEndringslogg(query)
         }
     }
 
     fun querySystemmelding(queryString: String): Result<List<SystemmeldingSanity>, ClientRequestException> {
-        return tryCacheFirst(
-            systemmeldingCache,
-            queryString,
-            "production"
-        ) { query, _ -> querySanitySystemmelding(query, "production") }
+        return tryCacheFirst(systemmeldingCache, queryString) { query ->
+            querySanitySystemmelding(query)
+        }
     }
 
     @Throws(ClientRequestException::class)
-    private fun querySanityEndringslogg(queryString: String, dataset: String): EndringJson {
+    private fun querySanityEndringslogg(queryString: String): EndringJson {
         val response: EndringJson
         runBlocking {
-            response = client.get("$baseUrl/data/query/$dataset?query=$queryString")
+            response = client.get("$baseUrl/data/query/production?query=$queryString")
         }
         val responseWithImage = EndringJson(response.result.map {
             it.copy(
@@ -81,10 +90,7 @@ class SanityClient(
                             is SlideImageJson ->
                                 slide.copy(
                                     image = SlideImageDl(
-                                        imageObjToByteArray(
-                                            slide.image.slideImage.jsonObject,
-                                            dataset
-                                        )
+                                        imageObjToByteArray(slide.image.slideImage.jsonObject)
                                     )
                                 )
                             else -> slide
@@ -93,16 +99,11 @@ class SanityClient(
                 )
             )
         })
-        val listenUrl = "$baseUrl/data/listen/$dataset?query=$queryString&includeResult=false&visibility=query"
-        // call was successful. must then check if the response is empty. If empty -> don't subscribe
-        if (response.result.isNotEmpty()) {
-            sanityListenerEndringlogg.subscribeToSanityApp(listenUrl, queryString, dataset)
-        }
         return responseWithImage
     }
 
     @Throws(ClientRequestException::class)
-    private fun querySanitySystemmelding(queryString: String, dataset: String): List<SystemmeldingSanity> {
+    private fun querySanitySystemmelding(queryString: String): List<SystemmeldingSanity> {
         logger.info("Gjør kall mot sanity...")
         val response: SystemmeldingSanityRespons
         runBlocking {
@@ -110,14 +111,14 @@ class SanityClient(
         }
         val listenUrl = "$baseUrl/data/listen/production?query=$queryString&includeResult=false&visibility=query"
 
-        sanityListenerSystemMelding.subscribeToSanityApp(listenUrl, queryString, dataset)
+        sanityListenerSystemMelding.subscribeToSanityApp(listenUrl, queryString)
         return response.result
     }
 
-    private fun imageObjToByteArray(obj: JsonObject, dataset: String): ByteArray {
+    private fun imageObjToByteArray(obj: JsonObject): ByteArray {
         val refJson: String = obj["asset"]!!.jsonObject["_ref"].toString().replace("\"", "")
         val ref = refJson.replace("(-([A-Za-z]+))\$".toRegex(), ".\$2").drop(6)
-        val url = "https://cdn.sanity.io/images/$projId/$dataset/$ref"
+        val url = "https://cdn.sanity.io/images/$projId/production/$ref"
         val httpResp: HttpResponse
         val byteArr: ByteArray
         runBlocking {
@@ -131,12 +132,10 @@ class SanityClient(
     private fun <V> tryCacheFirst(
         cache: Cache<String, V>,
         query: String,
-        dataset: String,
-        valueSupplier: (queryString: String, datasetString: String) -> V
+        valueSupplier: (queryString: String) -> V
     ): Result<V, ClientRequestException> {
-        val key = "$query.$dataset"
         return try {
-            val value = cache.get(key) { valueSupplier(query, dataset) }
+            val value = cache.get(query) { valueSupplier(query) }
             Ok(value)
         } catch (e: ClientRequestException) {
             Err(e)

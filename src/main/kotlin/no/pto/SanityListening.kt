@@ -5,9 +5,12 @@ import com.launchdarkly.eventsource.ConnectionErrorHandler
 import com.launchdarkly.eventsource.EventHandler
 import com.launchdarkly.eventsource.EventSource
 import com.launchdarkly.eventsource.MessageEvent
+import no.pto.env.erIProd
 import okhttp3.internal.http2.StreamResetException
 import org.slf4j.LoggerFactory
 import java.net.URI
+import java.net.URLEncoder
+import java.nio.charset.Charset
 import java.time.*
 import java.time.temporal.TemporalAdjusters
 import java.util.concurrent.Executors
@@ -17,16 +20,14 @@ import java.util.concurrent.TimeUnit
 private val logger = LoggerFactory.getLogger("no.nav.pto.endringslogg.Application")
 private var subscribedApps: HashMap<String, SubscribedApp> = hashMapOf()
 
+
 /* Class to handle events from EventHandler */
 class MessageEventHandler<V : Any?>(
     val cache: Cache<String, V>,
-    val updateQuery: (query: String, p: String) -> V
+    val updateQuery: (query: String) -> V
 ) : EventHandler {
 
-    fun subscribeToSanityApp(listenUrl: String, queryString: String, dataset: String) {
-        if(subscribedApps.contains(listenUrl)){
-           return
-        }
+    fun subscribeToSanityApp(listenUrl: String, queryString: String) {
         logger.info("Starter å lytte på: {}", queryString)
         val eventHandler = MessageEventHandler(cache, updateQuery)
         val eventSource: EventSource = EventSource.Builder(eventHandler, URI.create(listenUrl))
@@ -35,9 +36,11 @@ class MessageEventHandler<V : Any?>(
             .build()
 
         eventSource.start()
-        if (!subscribedApps.containsKey(listenUrl)) {
-            subscribedApps[listenUrl] =
-                SubscribedApp(listenUrl, queryString, dataset, "$queryString.$dataset", eventSource)
+        if (subscribedApps.containsKey(listenUrl)) {
+            logger.warn("lytter allerde til: {}", queryString)
+            eventSource.close()
+        } else {
+            subscribedApps[listenUrl] = SubscribedApp(listenUrl, queryString, eventSource)
         }
 
         // Schedule task to ensure that connection has been established. If not, remove data from cache
@@ -45,8 +48,9 @@ class MessageEventHandler<V : Any?>(
             if (!subscribedApps[listenUrl]?.connectionEstablished!!) {
                 logger.warn("Connection to $listenUrl not established.")
                 subscribedApps[listenUrl]?.eventSource?.close()
-                subscribedApps.remove(listenUrl)
-                cache.asMap().remove(subscribedApps[listenUrl]?.cacheKey)
+                cache.asMap().remove(subscribedApps[listenUrl]?.queryString)
+                logger.error("Klarte ikke å starte lytting mot: {}", queryString)
+                subscribeToSanityApp(listenUrl, queryString)
             }
         }, 20, TimeUnit.SECONDS)
     }
@@ -71,7 +75,7 @@ class MessageEventHandler<V : Any?>(
                     Executors.newSingleThreadScheduledExecutor().schedule({
                         subscribedApps[origin]?.connectionEstablished = false
                         subscribedApps[origin]?.eventSource?.close()
-                        cache.asMap().remove(subscribedApps[origin]?.cacheKey)
+                        cache.asMap().remove(subscribedApps[origin]?.queryString)
                         subscribedApps.remove(origin)
                         logger.info("Unsubscribed from listening API: $origin")
                     }, msToNextDay(DayOfWeek.SATURDAY, 1), TimeUnit.MILLISECONDS)
@@ -81,18 +85,20 @@ class MessageEventHandler<V : Any?>(
             }
             "mutation" -> { // a change is discovered in Sanity -> update cache
                 logger.info("Mutation in $origin discovered, updating cache.")
-                updateCache(
-                    cache,
-                    subscribedApps[origin]!!.queryString,
-                    subscribedApps[origin]!!.dataset
-                ) { q, p -> updateQuery(q, p) }
+                updateCache(cache, subscribedApps[origin]!!.queryString) { q -> updateQuery(q) }
             }
             "disconnect" -> { // client should disconnect and stay disconnected. Likely due to a query error
                 logger.info("Listening API for $origin requested disconnection with error message: ${messageEvent.data}")
-                subscribedApps[origin]?.connectionEstablished = false
-                subscribedApps[origin]?.eventSource?.close()
-                cache.asMap().remove(subscribedApps[origin]?.cacheKey)
+                val connection = subscribedApps[origin];
+                connection?.connectionEstablished = false
+                connection?.eventSource?.close()
+                cache.asMap().remove(connection?.queryString)
                 subscribedApps.remove(origin)
+
+                if (connection != null) {
+                    logger.info("Prøver å reconnecte til: {}", connection.queryString)
+                    subscribeToSanityApp(connection.queryString, connection.queryString)
+                }
             }
         }
     }
@@ -113,12 +119,9 @@ class MessageEventHandler<V : Any?>(
 private fun <V> updateCache(
     cache: Cache<String, V>,
     query: String,
-    dataset: String,
-    valueSupplier: (queryString: String, datasetString: String) -> V
+    valueSupplier: (queryString: String) -> V
 ) {
-    val key = "$query.$dataset"
-    val newValue = valueSupplier(query, dataset)
-    cache.put(key, newValue)
+    cache.put(query, valueSupplier(query))
 }
 
 /* Shuts down connection when connection attempt fails*/
