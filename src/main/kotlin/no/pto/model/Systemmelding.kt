@@ -13,8 +13,8 @@ data class SystemmeldingSanity(
     val tittel: String,
     val alert: String,
     val description: BlockContent,
-    val tilDato: String,
-    val fraDato: String,
+    val tilDato: String?,
+    val fraDato: String?,
 )
 
 @Serializable
