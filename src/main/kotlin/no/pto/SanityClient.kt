@@ -49,7 +49,6 @@ class SanityClient(
         sanityListenerEndringlogg.subscribeToSanityApp(listenUrl, queryString)
     }
 
-
     fun initSanitySystemMeldingListener(queryString: String) {
         val listenUrl = "$baseUrl/data/listen/production?query=$queryString&includeResult=false&visibility=query"
         sanityListenerSystemMelding.subscribeToSanityApp(listenUrl, queryString)

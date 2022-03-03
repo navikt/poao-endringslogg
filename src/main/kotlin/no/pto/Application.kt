@@ -48,7 +48,10 @@ fun main() {
     flyway.migrate()
 
     val client = SanityClient(SANITY_PROJECT_ID)
+
+    // NOTE: Legg til evt. nye queryes her ->
     client.initSanitySystemMeldingListener(getSystemmeldingPoaoQuery())
+    client.initSanityEndringloggListener(getEndringsloggPoaoQuery())
     connectToDatabase()
 
     embeddedServer(Netty, environment = applicationEngineEnvironment {
