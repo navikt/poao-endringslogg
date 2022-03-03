@@ -10,7 +10,7 @@ data class SystemmeldingSanityRespons(
 
 @Serializable
 data class SystemmeldingSanity(
-    val tittel: String,
+    val title: String,
     val alert: String,
     val description: BlockContent,
     val tilDato: String?,

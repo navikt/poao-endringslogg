@@ -53,7 +53,7 @@ fun filtrerSystemmeldinger(systemmeldinger: Ok<List<SystemmeldingSanity>>): List
         .filter { it.tilDato == null || ZonedDateTime.parse(it.tilDato).isAfter(ZonedDateTime.now()) }
         .map {
             Systemmelding(
-                tittel = it.tittel,
+                tittel = it.title,
                 type = it.alert,
                 beskrivelse = it.description
             )
