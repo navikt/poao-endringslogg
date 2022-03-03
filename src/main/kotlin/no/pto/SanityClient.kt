@@ -16,6 +16,7 @@ import no.pto.MessageEventHandler
 import no.pto.SlideImageDl
 import no.pto.SlideImageJson
 import no.pto.model.SystemmeldingSanity
+import no.pto.model.SystemmeldingSanityRespons
 import org.slf4j.LoggerFactory
 import java.util.concurrent.TimeUnit
 
@@ -103,14 +104,14 @@ class SanityClient(
     @Throws(ClientRequestException::class)
     private fun querySanitySystemmelding(queryString: String, dataset: String): List<SystemmeldingSanity> {
         logger.info("Gjør kall mot sanity...")
-        val response: List<SystemmeldingSanity>
+        val response: SystemmeldingSanityRespons
         runBlocking {
             response = client.get("$baseUrl/data/query/production?query=$queryString")
         }
         val listenUrl = "$baseUrl/data/listen/production?query=$queryString&includeResult=false&visibility=query"
 
         sanityListenerSystemMelding.subscribeToSanityApp(listenUrl, queryString, dataset)
-        return response
+        return response.result
     }
 
     private fun imageObjToByteArray(obj: JsonObject, dataset: String): ByteArray {
