@@ -46,10 +46,9 @@ fun main() {
         DB_PASSWORD
     ).load()
     flyway.migrate()
+    val client = SanityClient(SANITY_PROJECT_ID, API_VERSION_ENDRINGSLOGG)
 
-    val client = SanityClient(SANITY_PROJECT_ID)
-
-    // NOTE: Legg til evt. nye queryes her ->
+    // NOTE: Legg til evt. nye queries her ->
     client.initSanitySystemMeldingListener(getSystemmeldingPoaoQuery())
     client.initSanityEndringloggListener(getEndringsloggPoaoQuery())
     connectToDatabase()

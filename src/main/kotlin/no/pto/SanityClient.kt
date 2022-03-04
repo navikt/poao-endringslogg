@@ -11,11 +11,7 @@ import io.ktor.client.statement.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
-import no.pto.EndringJson
-import no.pto.MessageEventHandler
-import no.pto.SlideImageDl
-import no.pto.SlideImageJson
-import no.pto.model.SystemmeldingSanity
+import no.pto.*
 import no.pto.model.SystemmeldingSanityRespons
 import org.slf4j.LoggerFactory
 import java.util.concurrent.TimeUnit
@@ -24,25 +20,25 @@ sealed class Result<out T, out E>
 class Ok<out T>(val value: T) : Result<T, Nothing>()
 class Err<out E>(val error: E) : Result<Nothing, E>()
 
-private val logger = LoggerFactory.getLogger("no.nav.pto.endringslogg.Application")
-val apiVersion: String = "v2021-06-07"
+private val logger = LoggerFactory.getLogger("no.nav.pto.endringslogg.SanityClient")
 
 private val endringsloggCache: Cache<String, EndringJson> = Caffeine.newBuilder()
-    .expireAfterWrite(1000, TimeUnit.HOURS) // Cache skal bli oppdatert av sanity client
+    .expireAfterWrite(336, TimeUnit.HOURS) // Cache blir også bli oppdatert av SanityListeningClient
     .maximumSize(100)
     .build()
 
 private val systemmeldingCache: Cache<String, SystemmeldingSanityRespons> = Caffeine.newBuilder()
-    .expireAfterWrite(1000, TimeUnit.HOURS) // Cache skal bli oppdatert av sanity client
+    .expireAfterWrite(336, TimeUnit.HOURS) // Cache blir også oppdatert av SanityListeningClient
     .maximumSize(100)
     .build()
 
 class SanityClient(
-    private val projId: String
+    private val projId: String,
+    apiVersion: String
 ) {
     private val baseUrl: String = "https://$projId.api.sanity.io/$apiVersion"
-    private val sanityListenerEndringlogg = MessageEventHandler(endringsloggCache, this::querySanityEndringslogg)
-    private val sanityListenerSystemMelding = MessageEventHandler(systemmeldingCache, this::querySanitySystemmelding)
+    private val sanityListenerEndringlogg = SanityListeningClient(endringsloggCache, this::querySanityEndringslogg)
+    private val sanityListenerSystemMelding = SanityListeningClient(systemmeldingCache, this::querySanitySystemmelding)
 
     fun initSanityEndringloggListener(queryString: String) {
         val listenUrl = "$baseUrl/data/listen/production?query=$queryString&includeResult=false&visibility=query"

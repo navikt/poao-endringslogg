@@ -44,7 +44,7 @@ fun Application.configureSystemmeldingRouting(client: SanityClient) {
     }
 }
 
-private fun filtrerSystemmeldinger(systemmeldinger: List<SystemmeldingSanity>): List<Systemmelding> {
+fun filtrerSystemmeldinger(systemmeldinger: List<SystemmeldingSanity>): List<Systemmelding> {
     return systemmeldinger
         .filter { it.fraDato == null || ZonedDateTime.parse(it.fraDato).isBefore(ZonedDateTime.now()) }
         .filter { it.tilDato == null || ZonedDateTime.parse(it.tilDato).isAfter(ZonedDateTime.now()) }

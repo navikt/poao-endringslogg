@@ -12,17 +12,16 @@ import java.time.Duration
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-private val logger = LoggerFactory.getLogger("no.nav.pto.endringslogg.MessageEventHandler")
+private val logger = LoggerFactory.getLogger("no.nav.pto.endringslogg.SanityListeningClient")
 private var subscribedApps: HashMap<String, SubscribedApp> = hashMapOf()
 
-
-class MessageEventHandler<V : Any?>(
+class SanityListeningClient<V : Any?>(
     private val cache: Cache<String, V>,
     private val updateQuery: (query: String) -> V
 ) : EventHandler {
     fun subscribeToSanityApp(listenUrl: String, queryString: String) {
         logger.info("Starter å lytte på: {}", queryString)
-        val eventHandler = MessageEventHandler(cache, updateQuery)
+        val eventHandler = SanityListeningClient(cache, updateQuery)
         val eventSource: EventSource = EventSource.Builder(eventHandler, URI.create(listenUrl))
             .reconnectTime(Duration.ofMillis(3000))
             .connectionErrorHandler(SanityConnectionErrorHandler())
@@ -60,27 +59,24 @@ class MessageEventHandler<V : Any?>(
     /* Handles events from Sanity listen API*/
     override fun onMessage(event: String, messageEvent: MessageEvent) {
         val origin = messageEvent.origin.toString()
+        val connection = subscribedApps[origin] ?: return
+
         when (event) {
             "welcome" -> { // connection is established
-                subscribedApps[origin]?.connectionEstablished = true
+                connection.connectionEstablished = true
                 logger.info("Subscribing to listening API: $origin")
             }
             "mutation" -> { // a change is discovered in Sanity -> update cache
                 logger.info("Mutation in $origin discovered, updating cache.")
-                updateCache(cache, subscribedApps[origin]!!.queryString) { q -> updateQuery(q) }
+                cache.put(connection.queryString, updateQuery(connection.queryString))
             }
             "disconnect" -> { // client should disconnect and stay disconnected. Likely due to a query error
                 logger.info("Listening API for $origin requested disconnection with error message: ${messageEvent.data}")
-                val connection = subscribedApps[origin];
-                connection?.connectionEstablished = false
-                connection?.eventSource?.close()
-                cache.asMap().remove(connection?.queryString)
                 subscribedApps.remove(origin)
+                connection.eventSource.close()
 
-                if (connection != null) {
-                    logger.info("Prøver å reconnecte til: {}", connection.queryString)
-                    subscribeToSanityApp(connection.queryString, connection.queryString)
-                }
+                logger.info("Prøver å reconnecte til: {}", connection.queryString)
+                subscribeToSanityApp(connection.queryString, connection.queryString)
             }
         }
     }
@@ -96,14 +92,6 @@ class MessageEventHandler<V : Any?>(
     override fun onComment(comment: String) {
         logger.debug("Holder stream mot Sanity i gang")
     }
-}
-
-private fun <V> updateCache(
-    cache: Cache<String, V>,
-    query: String,
-    valueSupplier: (queryString: String) -> V
-) {
-    cache.put(query, valueSupplier(query))
 }
 
 /* Shuts down connection when connection attempt fails*/
