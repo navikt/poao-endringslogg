@@ -46,14 +46,18 @@ fun main() {
         DB_PASSWORD
     ).load()
     flyway.migrate()
+    val client = SanityClient(SANITY_PROJECT_ID, API_VERSION_ENDRINGSLOGG)
 
-    val client = SanityClient(SANITY_PROJECT_ID, "production")
+    // NOTE: Legg til evt. nye queries her ->
+    client.initSanitySystemMeldingListener(getSystemmeldingPoaoQuery())
+    client.initSanityEndringloggListener(getEndringsloggPoaoQuery())
     connectToDatabase()
 
     embeddedServer(Netty, environment = applicationEngineEnvironment {
         module {
             main()
-            configureRouting(client)
+            configureEndringsloggRouting(client)
+            configureSystemmeldingRouting(client)
         }
         connector {
             port = 8080
