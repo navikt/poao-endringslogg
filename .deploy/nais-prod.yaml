@@ -16,3 +16,4 @@ spec:
             name: endringslogg
   ingresses:
     - https://poao-endringslogg.intern.nav.no
+    - https://poao-sanity.intern.nav.no
