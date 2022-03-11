@@ -52,6 +52,7 @@ fun filtrerSystemmeldinger(systemmeldinger: List<SystemmeldingSanity>): List<Sys
             Systemmelding(
                 tittel = it.title,
                 type = it.alert,
+                beskrivelse = it.description
             )
         }
 }
