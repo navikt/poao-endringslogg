@@ -21,5 +21,4 @@ data class SystemmeldingSanity(
 data class Systemmelding(
     val tittel: String,
     val type: String,
-    val beskrivelse: BlockContent
 )
