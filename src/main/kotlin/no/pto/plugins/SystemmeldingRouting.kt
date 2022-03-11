@@ -24,11 +24,10 @@ fun Application.configureSystemmeldingRouting(client: SanityClient) {
                     val result = systemmeldinger.value.result
                     if (result.isEmpty()) {
                         call.response.status(HttpStatusCode(200, "Ingen data"))
-                        call.respond(listOf<Systemmelding>())
+                        call.respond(HttpStatusCode.OK, listOf<Systemmelding>())
                     } else {
                         val aktiveSystemmeldinger = filtrerSystemmeldinger(result)
-                        call.response.status(HttpStatusCode(200, "OK"))
-                        call.respond(aktiveSystemmeldinger)
+                        call.respond(HttpStatusCode.OK, aktiveSystemmeldinger)
                     }
                 }
                 is Err -> {
