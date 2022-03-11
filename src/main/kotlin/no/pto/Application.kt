@@ -30,6 +30,9 @@ fun Application.main() {
         host("app-q1.dev.adeo.no", listOf("https"))
         host("endringslogg.sanity.studio", listOf("https"))
 
+        header("Nav-Consumer-Id")
+        header("Content-Type")
+
         method(HttpMethod.Options)
         method(HttpMethod.Get)
         method(HttpMethod.Post)
