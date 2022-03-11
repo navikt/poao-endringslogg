@@ -27,6 +27,7 @@ fun Application.configureSystemmeldingRouting(client: SanityClient) {
                         call.respond(listOf<Systemmelding>())
                     } else {
                         val aktiveSystemmeldinger = filtrerSystemmeldinger(result)
+                        call.response.status(HttpStatusCode(200, "OK"))
                         call.respond(aktiveSystemmeldinger)
                     }
                 }
