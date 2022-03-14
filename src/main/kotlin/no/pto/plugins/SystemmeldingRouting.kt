@@ -18,16 +18,14 @@ val systemmeldingerPoaoQuery: String = getSystemmeldingPoaoQuery()
 fun Application.configureSystemmeldingRouting(client: SanityClient) {
     routing {
         get("/systemmeldinger") {
-            logger.info("Henter ut alle alerts, prod: {}", erIProd())
             when (val systemmeldinger = client.querySystemmelding(systemmeldingerPoaoQuery)) {
                 is Ok -> {
                     val result = systemmeldinger.value.result
                     if (result.isEmpty()) {
-                        call.response.status(HttpStatusCode(200, "Ingen data"))
-                        call.respond(listOf<Systemmelding>())
+                        call.respond(HttpStatusCode.OK, listOf<Systemmelding>())
                     } else {
                         val aktiveSystemmeldinger = filtrerSystemmeldinger(result)
-                        call.respond(aktiveSystemmeldinger)
+                        call.respond(HttpStatusCode.OK, aktiveSystemmeldinger)
                     }
                 }
                 is Err -> {

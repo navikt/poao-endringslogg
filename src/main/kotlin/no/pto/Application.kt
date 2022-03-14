@@ -28,7 +28,9 @@ fun Application.main() {
         host("veilarbportefoljeflatefs-q1.nais.preprod.local", listOf("https"))
         host("app-q1.adeo.no", listOf("https"))
         host("app-q1.dev.adeo.no", listOf("https"))
-        host("endringslogg.sanity.studio", listOf("https"))
+
+        header("Nav-Consumer-Id")
+        header("Content-Type")
 
         method(HttpMethod.Options)
         method(HttpMethod.Get)
