@@ -1,4 +1,4 @@
-package no.pto
+package no.pto.database
 
 import ModalSerializer
 import SlideSerializer

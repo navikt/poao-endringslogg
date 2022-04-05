@@ -8,7 +8,7 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import no.pto.*
+import no.pto.database.*
 import no.pto.env.getEndringsloggPoaoQuery
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

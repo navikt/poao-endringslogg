@@ -11,7 +11,12 @@ import io.ktor.client.statement.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
-import no.pto.*
+import no.pto.SanityListeningClient
+import no.pto.database.EndringJson
+import no.pto.database.SlideImageDl
+import no.pto.database.SlideImageJson
+import no.pto.env.getEndringsloggPoaoQuery
+import no.pto.env.getSystemmeldingPoaoQuery
 import no.pto.model.SystemmeldingSanityRespons
 import org.slf4j.LoggerFactory
 import java.util.concurrent.TimeUnit
@@ -40,14 +45,38 @@ class SanityClient(
     private val sanityListenerEndringlogg = SanityListeningClient(endringsloggCache, this::querySanityEndringslogg)
     private val sanityListenerSystemMelding = SanityListeningClient(systemmeldingCache, this::querySanitySystemmelding)
 
-    fun initSanityEndringloggListener(queryString: String) {
-        val listenUrl = "$baseUrl/data/listen/production?query=$queryString&includeResult=false&visibility=query"
-        sanityListenerEndringlogg.subscribeToSanityApp(listenUrl, queryString)
+    fun initSanityEndringloggListener() {
+        val listenUrl = getEndringsloggListeningURL()
+        sanityListenerEndringlogg.subscribeToSanityApp(listenUrl, getEndringsloggPoaoQuery())
     }
 
-    fun initSanitySystemMeldingListener(queryString: String) {
-        val listenUrl = "$baseUrl/data/listen/production?query=$queryString&includeResult=false&visibility=query"
-        sanityListenerSystemMelding.subscribeToSanityApp(listenUrl, queryString)
+    fun initSanitySystemMeldingListener() {
+        val listenUrl = getSystemMeldingListeningURL()
+        sanityListenerSystemMelding.subscribeToSanityApp(listenUrl, getSystemmeldingPoaoQuery())
+    }
+
+    fun reConnectListening() {
+        val listenUrlSystemmeldinger = getSystemMeldingListeningURL()
+        val listenUrlEndringslogg = getEndringsloggListeningURL()
+
+        if(!sanityListenerSystemMelding.isListeningTo(listenUrlSystemmeldinger)){
+            logger.info("Prøver å reconnecte lytting på Systemmeldinger")
+            initSanitySystemMeldingListener()
+        }
+        if(!sanityListenerEndringlogg.isListeningTo(listenUrlEndringslogg)){
+            logger.info("Prøver å reconnecte lytting på Endringslogg")
+            initSanityEndringloggListener()
+        }
+        logger.info("Kontrollerte at lyttning er aktivt.")
+    }
+
+    private fun getEndringsloggListeningURL(): String {
+        val queryString = getEndringsloggPoaoQuery()
+        return "$baseUrl/data/listen/production?query=$queryString&includeResult=false&visibility=query"
+    }
+    private fun getSystemMeldingListeningURL(): String {
+        val queryString = getSystemmeldingPoaoQuery()
+        return "$baseUrl/data/listen/production?query=$queryString&includeResult=false&visibility=query"
     }
 
     private val client = HttpClient(CIO) {

@@ -1,7 +1,7 @@
 package no.pto.model
 
 import kotlinx.serialization.Serializable
-import no.pto.BlockContent
+import no.pto.database.BlockContent
 
 @Serializable
 data class SystemmeldingSanityRespons(
