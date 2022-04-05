@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit
 
 private val logger = LoggerFactory.getLogger("no.nav.pto.endringslogg.Application")
 private val client = SanityClient(SANITY_PROJECT_ID, API_VERSION_ENDRINGSLOGG)
-private val scheduler = Scheduler { client.reConnectListening() }
+private val scheduler = Scheduler { client.reconnectListening() }
 
 fun Application.main() {
     install(ContentNegotiation) {

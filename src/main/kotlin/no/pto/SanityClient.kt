@@ -55,7 +55,7 @@ class SanityClient(
         sanityListenerSystemMelding.subscribeToSanityApp(listenUrl, getSystemmeldingPoaoQuery())
     }
 
-    fun reConnectListening() {
+    fun reconnectListening() {
         val listenUrlSystemmeldinger = getSystemMeldingListeningURL()
         val listenUrlEndringslogg = getEndringsloggListeningURL()
 

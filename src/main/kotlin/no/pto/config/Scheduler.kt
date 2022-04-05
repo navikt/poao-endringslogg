@@ -10,7 +10,6 @@ class Scheduler(private val task: Runnable) {
         val taskWrapper = Runnable {
             task.run()
         }
-
         executor.scheduleWithFixedDelay(taskWrapper, 1, every.n, every.unit)
     }
 
