@@ -74,6 +74,9 @@ class SanityListeningClient<V : Any?>(
                 logger.error("Listening API for $origin requested disconnection with error message: ${messageEvent.data}")
                 subscribedApps.remove(origin)
                 connection.eventSource.close()
+
+                logger.info("Prøver å reconnecte til: {}", connection.queryString)
+                subscribeToSanityApp(connection.listenURL, connection.queryString)
             }
         }
     }
