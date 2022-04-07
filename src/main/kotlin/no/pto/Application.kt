@@ -8,12 +8,18 @@ import io.ktor.http.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import kotlinx.serialization.json.Json
+import no.pto.config.Every
+import no.pto.config.Scheduler
+import no.pto.database.connectToDatabase
 import no.pto.env.*
 import no.pto.plugins.*
 import org.flywaydb.core.Flyway
 import org.slf4j.LoggerFactory
+import java.util.concurrent.TimeUnit
 
 private val logger = LoggerFactory.getLogger("no.nav.pto.endringslogg.Application")
+private val client = SanityClient(SANITY_PROJECT_ID, API_VERSION_ENDRINGSLOGG)
+private val scheduler = Scheduler { client.reconnectListening() }
 
 fun Application.main() {
     install(ContentNegotiation) {
@@ -48,12 +54,15 @@ fun main() {
         DB_PASSWORD
     ).load()
     flyway.migrate()
-    val client = SanityClient(SANITY_PROJECT_ID, API_VERSION_ENDRINGSLOGG)
+    connectToDatabase()
 
     // NOTE: Legg til evt. nye queries her ->
-    client.initSanitySystemMeldingListener(getSystemmeldingPoaoQuery())
-    client.initSanityEndringloggListener(getEndringsloggPoaoQuery())
-    connectToDatabase()
+    client.initSanitySystemMeldingListener()
+    client.initSanityEndringloggListener()
+
+    // Hvis sanity er nede vil vi prøve å starte lytting vert 10ene min
+    // Dette kan også Skje ved oppstart av flere enn 1 pod
+    scheduler.scheduleExecution(Every(10, TimeUnit.MINUTES))
 
     embeddedServer(Netty, environment = applicationEngineEnvironment {
         module {

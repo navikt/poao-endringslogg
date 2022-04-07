@@ -7,7 +7,6 @@ import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import no.pto.env.erIProd
 import no.pto.env.getSystemmeldingPoaoQuery
 import no.pto.model.Systemmelding
 import no.pto.model.SystemmeldingSanity
@@ -22,9 +21,11 @@ fun Application.configureSystemmeldingRouting(client: SanityClient) {
                 is Ok -> {
                     val result = systemmeldinger.value.result
                     if (result.isEmpty()) {
+                        logger.info("status=200, method=GET, /systemmeldinger, 0 aktive meldinger")
                         call.respond(HttpStatusCode.OK, listOf<Systemmelding>())
                     } else {
                         val aktiveSystemmeldinger = filtrerSystemmeldinger(result)
+                        logger.info("status=200, method=GET, /systemmeldinger, {} aktive meldinger", aktiveSystemmeldinger.size)
                         call.respond(HttpStatusCode.OK, aktiveSystemmeldinger)
                     }
                 }

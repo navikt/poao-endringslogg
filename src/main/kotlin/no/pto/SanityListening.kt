@@ -5,6 +5,7 @@ import com.launchdarkly.eventsource.ConnectionErrorHandler
 import com.launchdarkly.eventsource.EventHandler
 import com.launchdarkly.eventsource.EventSource
 import com.launchdarkly.eventsource.MessageEvent
+import no.pto.database.SubscribedApp
 import okhttp3.internal.http2.StreamResetException
 import org.slf4j.LoggerFactory
 import java.net.URI
@@ -27,7 +28,7 @@ class SanityListeningClient<V : Any?>(
             .connectionErrorHandler(SanityConnectionErrorHandler())
             .build()
 
-        if (subscribedApps.containsKey(listenUrl)) {
+        if (isListeningTo(listenUrl)) {
             logger.warn("lytter allerde til: {}", queryString)
             return
         } else {
@@ -40,8 +41,7 @@ class SanityListeningClient<V : Any?>(
             if (!subscribedApps[listenUrl]?.connectionEstablished!!) {
                 subscribedApps[listenUrl]?.eventSource?.close()
                 cache.asMap().remove(subscribedApps[listenUrl]?.queryString)
-                logger.error("Klarte ikke å starte lytting mot: {}, prøver igjen...", queryString)
-                subscribeToSanityApp(listenUrl, queryString)
+                logger.error("Klarte ikke å starte lytting mot: {}", queryString)
             }
         }, 20, TimeUnit.SECONDS)
     }
@@ -71,12 +71,12 @@ class SanityListeningClient<V : Any?>(
                 cache.put(connection.queryString, updateQuery(connection.queryString))
             }
             "disconnect" -> { // client should disconnect and stay disconnected. Likely due to a query error
-                logger.info("Listening API for $origin requested disconnection with error message: ${messageEvent.data}")
+                logger.error("Listening API for $origin requested disconnection with error message: ${messageEvent.data}")
                 subscribedApps.remove(origin)
                 connection.eventSource.close()
 
                 logger.info("Prøver å reconnecte til: {}", connection.queryString)
-                subscribeToSanityApp(connection.queryString, connection.queryString)
+                subscribeToSanityApp(connection.listenURL, connection.queryString)
             }
         }
     }
@@ -91,6 +91,10 @@ class SanityListeningClient<V : Any?>(
 
     override fun onComment(comment: String) {
         logger.debug("Holder stream mot Sanity i gang")
+    }
+
+    fun isListeningTo(listeningUrl: String): Boolean {
+        return subscribedApps.containsKey(listeningUrl)
     }
 }
 
