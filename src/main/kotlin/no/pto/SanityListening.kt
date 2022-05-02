@@ -70,8 +70,8 @@ class SanityListeningClient<V : Any?>(
                 logger.info("Mutation in $origin discovered, updating cache.")
                 cache.put(connection.queryString, updateQuery(connection.queryString))
             }
-            "disconnect" -> { // client should disconnect and stay disconnected. Likely due to a query error
-                logger.error("Listening API for $origin requested disconnection with error message: ${messageEvent.data}")
+            "disconnect" -> {
+                logger.warn("Listening API for $origin requested disconnection with error message: ${messageEvent.data}")
                 subscribedApps.remove(origin)
                 connection.eventSource.close()
 
