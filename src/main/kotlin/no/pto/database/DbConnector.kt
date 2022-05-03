@@ -1,5 +1,7 @@
 package no.pto.database
 
+import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
 import no.pto.env.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.javatime.timestamp
@@ -35,12 +37,15 @@ object SeenForced: Table("seen_forced") {
 fun connectToDatabase() {
     val connectUrl = "jdbc:postgresql://$DB_HOST:$DB_PORT/$DB_DATABASE?reWriteBatchedInserts=true?sslmode=require"
 
-    Database.connect(
-        connectUrl,
-        driver = "org.postgresql.Driver",
-        user = DB_USERNAME,
+    val config = HikariConfig().apply {
+        jdbcUrl = connectUrl
+        driverClassName = "org.postgresql.Driver"
+        username = DB_USERNAME
         password = DB_PASSWORD
-    )
+    }
+
+    val dataSource = HikariDataSource(config)
+    Database.connect(dataSource)
 }
 
 fun getSeenEntriesForUser(userId: String): List<UUID> = transaction {
