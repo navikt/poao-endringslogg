@@ -2,12 +2,9 @@ package no.pto
 
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
-import no.pto.config.Every
-import no.pto.config.Scheduler
 import no.pto.model.SystemmeldingSanity
 import no.pto.plugins.filtrerSystemmeldinger
 import org.junit.Test
-import java.util.concurrent.TimeUnit
 
 class ApplicationTest {
     @Test
