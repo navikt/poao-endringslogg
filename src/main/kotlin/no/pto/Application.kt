@@ -34,8 +34,8 @@ fun Application.main() {
         host("veilarbportefoljeflatefs-q1.nais.preprod.local", listOf("https"))
         host("app-q1.adeo.no", listOf("https"))
         host("app-q1.dev.adeo.no", listOf("https"))
-        host("veilarbportefoljeflatefs.dev.intern.nav.no", listOf("https"))
-        host("veilarbportefoljeflatefs.intern.nav.no", listOf("https"))
+        host("veilarbportefoljeflate.dev.intern.nav.no", listOf("https"))
+        host("veilarbportefoljeflate.intern.nav.no", listOf("https"))
 
         header("Nav-Consumer-Id")
         header("Content-Type")
