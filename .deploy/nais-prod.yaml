@@ -7,6 +7,14 @@ metadata:
     team: pto
 spec:
   image: {{ image }}
+  azure:
+    application:
+      enabled: true
+  accessPolicy:
+    inbound:
+      rules:
+        - application: veilarbportefoljeflatefs
+          namespace: obo
   gcp:
     sqlInstances:
       - name: endringslogg-v3
