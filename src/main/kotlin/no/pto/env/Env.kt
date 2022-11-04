@@ -17,7 +17,7 @@ private val systemmeldingPoaoProdQuery = URLEncoder.encode("*[_type=='alert_over
 private val endringsloggPoaoQ1Query = URLEncoder.encode("*[_type=='afolg']", Charset.forName("utf-8"))
 private val endringsloggPoaoProdQuery = URLEncoder.encode("*[_type=='afolg'][publisert]", Charset.forName("utf-8"))
 
-fun erIProd() = System.getenv("NAIS_CLUSTER_NAME") == "prod-gcp"
+fun erIProd() = System.getenv("CLUSTER") == "prod-gcp"
 
 fun getSystemmeldingPoaoQuery(): String = if (erIProd()) systemmeldingPoaoProdQuery else systemmeldingPoaoQ1Query
 fun getEndringsloggPoaoQuery(): String = if (erIProd()) endringsloggPoaoProdQuery else endringsloggPoaoQ1Query
