@@ -15,6 +15,10 @@ spec:
       rules:
         - application: veilarbportefoljeflatefs
           namespace: obo
+    outbound:
+      external:
+        - host: li581mqu.api.sanity.io
+        - host: cdn.sanity.io
   gcp:
     sqlInstances:
       - name: endringslogg-v3
