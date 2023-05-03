@@ -27,5 +27,5 @@ spec:
           - envVarPrefix: DB
             name: endringslogg
   ingresses:
-    - https://poao-endringslogg.dev.intern.nav.no
+    - https://poao-endringslogg.intern.dev.nav.no
     - https://poao-sanity.dev.intern.nav.no
