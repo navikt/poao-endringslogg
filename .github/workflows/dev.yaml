@@ -8,6 +8,9 @@ on:
 env:
   IMAGE: ghcr.io/navikt/poao-endringslogg:${{ github.sha }}
 
+permissions:
+  packages: write
+
 jobs:
   build:
     name: Build and push package
