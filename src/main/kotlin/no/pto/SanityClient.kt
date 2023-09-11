@@ -28,13 +28,13 @@ class Err<out E>(val error: E) : Result<Nothing, E>()
 private val logger = LoggerFactory.getLogger("no.nav.pto.endringslogg.SanityClient")
 
 private val endringsloggCache: Cache<String, EndringJson> = Caffeine.newBuilder()
-    .expireAfterWrite(336, TimeUnit.HOURS) // Cache blir også bli oppdatert av SanityListeningClient
-    .maximumSize(100)
+    .expireAfterWrite(1, TimeUnit.HOURS) // Cache blir også bli oppdatert av SanityListeningClient
+    .maximumSize(1000)
     .build()
 
 private val systemmeldingCache: Cache<String, SystemmeldingSanityRespons> = Caffeine.newBuilder()
-    .expireAfterWrite(336, TimeUnit.HOURS) // Cache blir også oppdatert av SanityListeningClient
-    .maximumSize(100)
+    .expireAfterWrite(1, TimeUnit.HOURS) // Cache blir også oppdatert av SanityListeningClient
+    .maximumSize(1000)
     .build()
 
 class SanityClient(
