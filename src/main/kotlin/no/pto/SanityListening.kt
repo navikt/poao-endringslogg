@@ -21,7 +21,7 @@ class SanityListeningClient<V : Any?>(
     private val updateQuery: (query: String) -> V
 ) : EventHandler {
     fun subscribeToSanityApp(listenUrl: String, queryString: String) {
-        logger.info("Starter å lytte på : {}", queryString)
+        logger.info("Starter å lytte på: {}", queryString)
         val eventHandler = SanityListeningClient(cache, updateQuery)
         val eventSource: EventSource = EventSource.Builder(eventHandler, URI.create(listenUrl))
             .reconnectTime(Duration.ofMillis(3000))
