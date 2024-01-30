@@ -51,7 +51,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Deploy til prod-gcp
-        uses: nais/deploy/actions/deploy@v1
+        uses: nais/deploy/actions/deploy@v2
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: prod-gcp
