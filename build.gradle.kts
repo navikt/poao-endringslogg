@@ -7,7 +7,7 @@ val logstash_encoder_version: String by project
 plugins {
     application
     kotlin("jvm") version "1.6.10"
-    kotlin("plugin.serialization") version "1.6.10"
+    kotlin("plugin.serialization") version "1.9.22"
     id("com.github.johnrengelman.shadow") version "6.1.0"
 }
 
