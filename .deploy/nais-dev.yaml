@@ -6,7 +6,7 @@ metadata:
   labels:
     team: pto
 spec:
-  image: {{ image }}
+  image: {{image}}
   azure:
     application:
       enabled: true
