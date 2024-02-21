@@ -7,7 +7,7 @@ val logstash_encoder_version: String by project
 plugins {
     application
     kotlin("jvm") version "1.6.10"
-    kotlin("plugin.serialization") version "1.6.10"
+    kotlin("plugin.serialization") version "1.9.22"
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
@@ -15,7 +15,6 @@ group = "no.nav.pto"
 version = "0.0.1"
 application {
     mainClass.set("no.pto.ApplicationKt")
-    mainClassName = "no.pto.ApplicationKt" // Need this while shadow plugin < 7
 }
 
 repositories {
