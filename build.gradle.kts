@@ -8,14 +8,13 @@ plugins {
     application
     kotlin("jvm") version "1.6.10"
     kotlin("plugin.serialization") version "1.9.22"
-    id("com.github.johnrengelman.shadow") version "6.1.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = "no.nav.pto"
 version = "0.0.1"
 application {
     mainClass.set("no.pto.ApplicationKt")
-    mainClassName = "no.pto.ApplicationKt" // Need this while shadow plugin < 7
 }
 
 repositories {
@@ -40,10 +39,10 @@ dependencies {
     implementation("org.flywaydb:flyway-core:8.5.0")
     implementation("com.github.ben-manes.caffeine:caffeine:3.0.4")
     implementation("com.launchdarkly:okhttp-eventsource:2.3.2")
-    implementation("com.zaxxer:HikariCP:5.0.1")
+    implementation("com.zaxxer:HikariCP:5.1.0")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
-    testImplementation("com.h2database:h2:1.3.148")
+    testImplementation("com.h2database:h2:2.2.224")
 }
 
 tasks{
