@@ -7,7 +7,7 @@ on:
 
 permissions:
   packages: write
-
+  id-token: write
 jobs:
   build:
     name: Build and push package
@@ -50,9 +50,8 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Deploy til dev-gcp
-        uses: nais/deploy/actions/deploy@v1
+        uses: nais/deploy/actions/deploy@v2
         env:
-          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-gcp
           RESOURCE: .deploy/nais-dev.yaml
           VAR: image=${{ needs.build.outputs.image }}
