@@ -3,11 +3,11 @@ package no.pto.plugins
 import Err
 import Ok
 import SanityClient
-import io.ktor.application.*
+import io.ktor.server.application.*
 import io.ktor.http.*
-import io.ktor.request.*
-import io.ktor.response.*
-import io.ktor.routing.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import no.pto.database.*
 import no.pto.env.getEndringsloggPoaoQuery
 import org.slf4j.Logger
@@ -53,6 +53,8 @@ fun Application.configureEndringsloggRouting(client: SanityClient) {
                             )
                         )
                     }
+
+                    else -> {}
                 }
             }
         }
@@ -70,19 +72,19 @@ fun Application.configureEndringsloggRouting(client: SanityClient) {
         }
 
         post("/analytics/session-duration") {
-            val duration = call.receive<SessionDuration>()
+            call.receive<SessionDuration>()
             // TODO: report to prometheus
             call.respond(HttpStatusCode.OK)
         }
 
         patch("/analytics/modal-open") {
-            val id = call.receive<DocumentId>()
+            call.receive<DocumentId>()
             // TODO: report to prometheus
             call.respond(HttpStatusCode.OK)
         }
 
         patch("/analytics/link-click") {
-            val id = call.receive<DocumentId>()
+            call.receive<DocumentId>()
             // TODO: report to prometheus
             call.respond(HttpStatusCode.OK)
         }
