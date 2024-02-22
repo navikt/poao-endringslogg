@@ -4,9 +4,12 @@ import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
+import io.ktor.serialization.kotlinx.json.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.client.plugins.contentnegotiation.*
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import no.pto.SanityListeningClient
@@ -78,11 +81,12 @@ class SanityClient(
     }
 
     private val client = HttpClient(CIO) {
-        install(JsonFeature) {
-            serializer = KotlinxSerializer(kotlinx.serialization.json.Json {
-                prettyPrint = true
-                ignoreUnknownKeys = true
-            })
+        install(ContentNegotiation) {
+            json(
+                Json {
+                    prettyPrint = true
+                }
+            )
         }
     }
 
@@ -102,7 +106,7 @@ class SanityClient(
     private fun querySanityEndringslogg(queryString: String): EndringJson {
         val response: EndringJson
         runBlocking {
-            response = client.get("$baseUrl/data/query/production?query=$queryString")
+            response = client.get("$baseUrl/data/query/production?query=$queryString").body()
         }
         val responseWithImage = EndringJson(response.result.map {
             it.copy(
@@ -129,7 +133,7 @@ class SanityClient(
         logger.info("Gjør kall mot sanity...")
         val response: SystemmeldingSanityRespons
         runBlocking {
-            response = client.get("$baseUrl/data/query/production?query=$queryString")
+            response = client.get("$baseUrl/data/query/production?query=$queryString").body()
         }
         return response
     }
@@ -142,7 +146,7 @@ class SanityClient(
         val byteArr: ByteArray
         runBlocking {
             httpResp = client.get(url)
-            byteArr = httpResp.receive()
+            byteArr = httpResp.body()
         }
 
         return byteArr
