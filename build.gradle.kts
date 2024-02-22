@@ -6,7 +6,7 @@ val logstash_encoder_version: String by project
 
 plugins {
     application
-    kotlin("jvm") version "1.6.10"
+    kotlin("jvm") version "1.9.22"
     kotlin("plugin.serialization") version "1.9.22"
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
@@ -26,9 +26,9 @@ dependencies {
     implementation("io.ktor:ktor-server-core:$ktor_version")
     implementation("io.ktor:ktor-server-cors:${ktor_version}")
     implementation("io.ktor:ktor-server-netty:$ktor_version")
-    implementation("io.ktor:ktor-client-cio:2.3.7")
+    implementation("io.ktor:ktor-client-cio:$ktor_version")
     implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
-    implementation("io.ktor:ktor-client-core:2.2.4")
+    implementation("io.ktor:ktor-client-core:$ktor_version")
     implementation("io.ktor:ktor-serialization:$ktor_version")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
     implementation("ch.qos.logback:logback-classic:$logback_version")
@@ -37,10 +37,10 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-java-time:$exposed_version")
-    implementation("org.postgresql:postgresql:42.3.8")
+    implementation("org.postgresql:postgresql:42.7.2")
     implementation("com.google.cloud.sql:postgres-socket-factory:1.16.0")
-    implementation("org.flywaydb:flyway-core:8.5.0")
-    implementation("com.github.ben-manes.caffeine:caffeine:3.0.4")
+    implementation("org.flywaydb:flyway-core:9.16.0")
+    implementation("com.github.ben-manes.caffeine:caffeine:3.1.5")
     implementation("com.launchdarkly:okhttp-eventsource:4.1.1")
     implementation("com.zaxxer:HikariCP:5.1.0")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
