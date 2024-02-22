@@ -85,6 +85,7 @@ class SanityClient(
             json(
                 Json {
                     prettyPrint = true
+                    ignoreUnknownKeys = true
                 }
             )
         }
