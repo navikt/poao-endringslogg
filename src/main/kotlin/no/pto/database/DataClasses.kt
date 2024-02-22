@@ -6,7 +6,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
-import com.launchdarkly.eventsource.EventSource
+import com.launchdarkly.eventsource.background.BackgroundEventSource
 import no.pto.env.*
 
 @Serializable
@@ -91,6 +91,6 @@ data class DocumentId(
 data class SubscribedApp(
     val listenURL: String,
     val queryString: String,
-    val eventSource: EventSource,
+    val eventSource: BackgroundEventSource,
     var connectionEstablished: Boolean = false
 )

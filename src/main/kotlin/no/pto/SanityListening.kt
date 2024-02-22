@@ -1,15 +1,16 @@
 package no.pto
 
 import com.github.benmanes.caffeine.cache.Cache
-import com.launchdarkly.eventsource.ConnectionErrorHandler
-import com.launchdarkly.eventsource.EventHandler
+import com.launchdarkly.eventsource.background.BackgroundEventHandler
+import com.launchdarkly.eventsource.background.BackgroundEventSource
+import com.launchdarkly.eventsource.background.ConnectionErrorHandler
 import com.launchdarkly.eventsource.EventSource
+import com.launchdarkly.eventsource.HttpConnectStrategy
 import com.launchdarkly.eventsource.MessageEvent
 import no.pto.database.SubscribedApp
 import okhttp3.internal.http2.StreamResetException
 import org.slf4j.LoggerFactory
 import java.net.URI
-import java.time.Duration
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
@@ -19,12 +20,14 @@ private var subscribedApps: HashMap<String, SubscribedApp> = hashMapOf()
 class SanityListeningClient<V : Any?>(
     private val cache: Cache<String, V>,
     private val updateQuery: (query: String) -> V
-) : EventHandler {
+) : BackgroundEventHandler {
     fun subscribeToSanityApp(listenUrl: String, queryString: String) {
         logger.info("Starter å lytte på: {}", queryString)
         val eventHandler = SanityListeningClient(cache, updateQuery)
-        val eventSource: EventSource = EventSource.Builder(eventHandler, URI.create(listenUrl))
-            .reconnectTime(Duration.ofMillis(3000))
+        val eventSource: BackgroundEventSource = BackgroundEventSource.Builder(
+            eventHandler,
+            EventSource.Builder(HttpConnectStrategy.http(URI.create(listenUrl))
+            .readTimeout(3000, TimeUnit.MILLISECONDS)))
             .connectionErrorHandler(SanityConnectionErrorHandler())
             .build()
 
