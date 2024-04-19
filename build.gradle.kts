@@ -6,8 +6,8 @@ val logstash_encoder_version: String by project
 
 plugins {
     application
-    kotlin("jvm") version "1.9.22"
-    kotlin("plugin.serialization") version "1.9.22"
+    kotlin("jvm") version "1.9.23"
+    kotlin("plugin.serialization") version "1.9.23"
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
@@ -37,8 +37,8 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-java-time:$exposed_version")
-    implementation("org.postgresql:postgresql:42.7.2")
-    implementation("com.google.cloud.sql:postgres-socket-factory:1.16.0")
+    implementation("org.postgresql:postgresql:42.7.3")
+    implementation("com.google.cloud.sql:postgres-socket-factory:1.17.1")
     implementation("org.flywaydb:flyway-core:9.16.0")
     implementation("com.github.ben-manes.caffeine:caffeine:3.1.5")
     implementation("com.launchdarkly:okhttp-eventsource:4.1.1")
