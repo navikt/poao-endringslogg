@@ -42,6 +42,8 @@ fun connectToDatabase() {
         driverClassName = "org.postgresql.Driver"
         username = DB_USERNAME
         password = DB_PASSWORD
+        maximumPoolSize = 5
+        minimumIdle = 1
     }
 
     val dataSource = HikariDataSource(config)
@@ -49,11 +51,11 @@ fun connectToDatabase() {
 }
 
 fun getSeenEntriesForUser(userId: String): List<UUID> = transaction {
-    Seen.select { Seen.userId eq sha256(userId) }.map { it[Seen.documentId] }
+    Seen.selectAll().where { Seen.userId eq sha256(userId) }.map { it[Seen.documentId] }
 }
 
 fun getSeenForcedEntriesForUser(userId: String): List<UUID> = transaction {
-    SeenForced.select { SeenForced.userId eq sha256(userId) }.map { it[SeenForced.documentId] }
+    SeenForced.selectAll().where { SeenForced.userId eq sha256(userId) }.map { it[SeenForced.documentId] }
 }
 
 fun insertSeenEntries(userId: String, appId: String, documentIds: List<UUID>) = transaction {
