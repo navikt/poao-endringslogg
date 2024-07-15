@@ -38,7 +38,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-java-time:$exposed_version")
     implementation("org.postgresql:postgresql:42.7.3")
-    implementation("com.google.cloud.sql:postgres-socket-factory:1.19.0")
+    implementation("com.google.cloud.sql:postgres-socket-factory:1.19.1")
     implementation("org.flywaydb:flyway-core:10.15.2")
     implementation("org.flywaydb:flyway-database-postgresql:10.15.2")
     implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
