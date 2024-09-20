@@ -46,7 +46,7 @@ dependencies {
     implementation("com.zaxxer:HikariCP:5.1.0")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
-    testImplementation("com.h2database:h2:2.2.224")
+    testImplementation("com.h2database:h2:2.3.232")
 }
 
 tasks{
