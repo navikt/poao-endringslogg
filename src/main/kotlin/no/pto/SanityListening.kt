@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit
 private val logger = LoggerFactory.getLogger("no.nav.pto.endringslogg.SanityListeningClient")
 private var subscribedApps: HashMap<String, SubscribedApp> = hashMapOf()
 
-class SanityListeningClient<V : Any?>(
+class SanityListeningClient<V : Any>(
     private val cache: Cache<String, V>,
     private val updateQuery: (query: String) -> V
 ) : BackgroundEventHandler {
