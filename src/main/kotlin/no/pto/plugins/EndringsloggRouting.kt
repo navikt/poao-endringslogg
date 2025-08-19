@@ -41,7 +41,7 @@ fun Application.configureEndringsloggRouting(client: SanityClient) {
                                     seenForced = it.id in seenForcedEntryIds,
                                     forcedModal = it.modal?.forcedModal
                                 )
-                            }.subList(0, min(maxEntries, endringslogger.value.result.size)))
+                            }.sortedByDescending { it.date }.subList(0, min(maxEntries, endringslogger.value.result.size)))
                         }
                     }
                     is Err -> {
