@@ -6,10 +6,13 @@ metadata:
   labels:
     team: pto
 spec:
-  image: {{image}}
-  azure:
-    application:
-      enabled: true
+  env:
+    - name: CORS_ALLOWED_ORIGINS
+      value: 'https://poao-endringslogg.ansatt.dev.nav.no/endringslogg,https://poao-sanity.ansatt.dev.nav.no/systemmeldinger,https://poao-endringslogg.ansatt.dev.nav.no/analytics/session-duration'
+    - name: CORS_ALLOWED_METHODS
+      value: 'GET,POST,OPTIONS'
+    - name: CORS_ALLOWED_HEADERS
+      value: 'Referer, Origin, Content-Type, Accept, X-Requested-With, cache-control, x_Nav-CallId, pragma, expires'
   accessPolicy:
     inbound:
       rules:
@@ -19,6 +22,10 @@ spec:
       external:
         - host: li581mqu.api.sanity.io
         - host: cdn.sanity.io
+  image: {{image}}
+  azure:
+    application:
+      enabled: true
   gcp:
     sqlInstances:
       - name: endringslogg-v3
