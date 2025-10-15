@@ -8,11 +8,11 @@ metadata:
 spec:
   env:
     - name: CORS_ALLOWED_ORIGINS
-      value: 'https://poao-endringslogg.ansatt.dev.nav.no/endringslogg,https://poao-sanity.ansatt.dev.nav.no/systemmeldinger,https://poao-endringslogg.ansatt.dev.nav.no/analytics/session-duration'
+      value: '*'
     - name: CORS_ALLOWED_METHODS
       value: 'GET,POST,OPTIONS'
     - name: CORS_ALLOWED_HEADERS
-      value: 'Referer, Origin, Content-Type, Accept, X-Requested-With, cache-control, x_Nav-CallId, pragma, expires'
+      value: '*'
   accessPolicy:
     inbound:
       rules:
