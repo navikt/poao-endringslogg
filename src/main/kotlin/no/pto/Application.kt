@@ -37,16 +37,21 @@ fun Application.main() {
         allowHost("app-q1.dev.adeo.no", listOf("https"))
         allowHost("veilarbportefoljeflate.intern.dev.nav.no", listOf("https"))
         allowHost("veilarbportefoljeflate.intern.nav.no", listOf("https"))
+        allowHost("veilarbportefoljeflate.ansatt.dev.nav.no", listOf("https"))
 
-        allowHeader("Nav-Consumer-Id")
-        allowHeader("Content-Type")
+        allowCredentials = true
+        allowNonSimpleContentTypes = true
+
         allowHeader(HttpHeaders.ContentType)
+        allowHeader(HttpHeaders.Authorization)
+        allowHeader("Nav-Consumer-Id")
 
         allowMethod(HttpMethod.Options)
         allowMethod(HttpMethod.Get)
         allowMethod(HttpMethod.Post)
         allowMethod(HttpMethod.Patch)
     }
+
 }
 
 fun main() {
