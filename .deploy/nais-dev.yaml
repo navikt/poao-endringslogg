@@ -6,10 +6,13 @@ metadata:
   labels:
     team: pto
 spec:
-  image: {{image}}
-  azure:
-    application:
-      enabled: true
+  env:
+    - name: CORS_ALLOWED_ORIGINS
+      value: 'https://app.adeo.no,https://veilarbportefoljeflatefs.nais.adeo.no,https://veilarbportefoljeflatefs-q1.nais.preprod.local,https://app-q1.adeo.no,https://app-q1.dev.adeo.no,https://veilarbportefoljeflate.intern.dev.nav.no,https://veilarbportefoljeflate.intern.nav.no,https://veilarbportefoljeflate.ansatt.dev.nav.no'
+    - name: CORS_ALLOWED_METHODS
+      value: 'GET,POST,OPTIONS,PATCH'
+    - name: CORS_ALLOWED_HEADERS
+      value: 'Content-Type,Authorization,Nav-Consumer-Id'
   accessPolicy:
     inbound:
       rules:
@@ -19,6 +22,10 @@ spec:
       external:
         - host: li581mqu.api.sanity.io
         - host: cdn.sanity.io
+  image: {{image}}
+  azure:
+    application:
+      enabled: true
   gcp:
     sqlInstances:
       - name: endringslogg-v3
