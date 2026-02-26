@@ -16,6 +16,7 @@ val systemmeldingerPoaoQuery: String = getSystemmeldingPoaoQuery()
 
 fun Application.configureSystemmeldingRouting(client: SanityClient) {
     routing {
+        options("/systemmeldinger") { call.respond(HttpStatusCode.OK) }
         get("/systemmeldinger") {
             when (val systemmeldinger = client.querySystemmelding(systemmeldingerPoaoQuery)) {
                 is Ok -> {

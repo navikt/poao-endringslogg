@@ -20,6 +20,7 @@ val endringsloggPoaoqQuery: String = getEndringsloggPoaoQuery()
 
 fun Application.configureEndringsloggRouting(client: SanityClient) {
     routing {
+        options("/endringslogg") { call.respond(HttpStatusCode.OK) }
         post("/endringslogg") {
             val (userId: String, appId: String, _, maxEntries: Int) = call.receive<BrukerData>()
             if (appId != "afolg") {
@@ -53,55 +54,68 @@ fun Application.configureEndringsloggRouting(client: SanityClient) {
                             )
                         )
                     }
-
                     else -> {}
                 }
             }
         }
 
+        options("/analytics/sett-endringer") { call.respond(HttpStatusCode.OK) }
         post("/analytics/sett-endringer") {
             val seen = call.receive<SeenStatus>()
             insertSeenEntries(seen.userId, seen.appId, seen.documentIds.map(UUID::fromString))
             call.respond(HttpStatusCode.OK)
         }
 
+        options("/analytics/seen-forced-modal") { call.respond(HttpStatusCode.OK) }
         post("/analytics/seen-forced-modal") {
             val seen = call.receive<SeenForcedStatus>()
             insertSeenForcedEntries(seen.userId, seen.documentIds.map(UUID::fromString))
             call.respond(HttpStatusCode.OK)
         }
 
+        options("/analytics/session-duration") { call.respond(HttpStatusCode.OK) }
         post("/analytics/session-duration") {
             call.receive<SessionDuration>()
             // TODO: report to prometheus
             call.respond(HttpStatusCode.OK)
         }
 
+        options("/analytics/modal-open") { call.respond(HttpStatusCode.OK) }
         patch("/analytics/modal-open") {
             call.receive<DocumentId>()
             // TODO: report to prometheus
             call.respond(HttpStatusCode.OK)
         }
 
+        options("/analytics/link-click") { call.respond(HttpStatusCode.OK) }
         patch("/analytics/link-click") {
             call.receive<DocumentId>()
             // TODO: report to prometheus
             call.respond(HttpStatusCode.OK)
         }
 
+        options("/data/seen-all") { call.respond(HttpStatusCode.OK) }
         get("/data/seen-all") {
             call.respond(HttpStatusCode.Gone)
         }
+
+        options("/data/seen-app") { call.respond(HttpStatusCode.OK) }
         get("/data/seen-app") {
             call.respond(HttpStatusCode.Gone)
         }
+
+        options("/data/seen") { call.respond(HttpStatusCode.OK) }
         get("/data/seen") {
             call.respond(HttpStatusCode.Gone)
         }
-        get("data/user-session-all") {
+
+        options("/data/user-session-all") { call.respond(HttpStatusCode.OK) }
+        get("/data/user-session-all") {
             call.respond(HttpStatusCode.Gone)
         }
-        get("data/unique-user-sessions-per-day") {
+
+        options("/data/unique-user-sessions-per-day") { call.respond(HttpStatusCode.OK) }
+        get("/data/unique-user-sessions-per-day") {
             call.respond(HttpStatusCode.Gone)
         }
     }
