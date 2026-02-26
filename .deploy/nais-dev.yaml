@@ -27,6 +27,15 @@ spec:
         databases:
           - envVarPrefix: DB
             name: endringslogg
+  replicas:
+    min: 1
+    max: 2
+  resources:
+    requests:
+      cpu: 50m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
   ingresses:
     - https://poao-endringslogg.intern.dev.nav.no
     - https://poao-endringslogg.ansatt.dev.nav.no
