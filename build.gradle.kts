@@ -34,11 +34,9 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstash_encoder_version")
     implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
-    implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-java-time:$exposed_version")
-    implementation("org.postgresql:postgresql:42.7.5")
-    implementation("com.google.cloud.sql:postgres-socket-factory:1.24.1")
+    implementation("org.postgresql:postgresql:42.7.10")
     implementation("org.flywaydb:flyway-core:12.0.1")
     implementation("org.flywaydb:flyway-database-postgresql:12.0.1")
     implementation("com.github.ben-manes.caffeine:caffeine:3.2.0")
@@ -46,7 +44,6 @@ dependencies {
     implementation("com.zaxxer:HikariCP:6.2.1")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
-    testImplementation("com.h2database:h2:2.3.232")
 }
 
 tasks{
