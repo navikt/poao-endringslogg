@@ -67,16 +67,9 @@ fun main() {
     // Dette kan også Skje ved oppstart av flere enn 1 pod
     scheduler.scheduleExecution(Every(10, TimeUnit.MINUTES))
 
-    embeddedServer(Netty, environment = applicationEngineEnvironment {
-        module {
-            main()
-            configureEndringsloggRouting(client)
-            configureSystemmeldingRouting(client)
-        }
-        connector {
-            port = 8080
-            host = "0.0.0.0"
-        }
-    }) {
+    embeddedServer(Netty, port = 8080, host = "0.0.0.0") {
+        main()
+        configureEndringsloggRouting(client)
+        configureSystemmeldingRouting(client)
     }.start(wait = true)
 }

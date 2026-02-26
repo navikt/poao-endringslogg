@@ -1,7 +1,5 @@
-import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializer
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
@@ -11,7 +9,6 @@ import java.util.*
 
 
 @ExperimentalSerializationApi
-@Serializer(forClass = UUID::class)
 object UUIDSerializer : KSerializer<UUID> {
 
     override val descriptor: SerialDescriptor
@@ -27,7 +24,6 @@ object UUIDSerializer : KSerializer<UUID> {
 }
 
 @ExperimentalSerializationApi
-@Serializer(forClass = Modal::class)
 object ModalSerializer : KSerializer<Modal?> {
 
     override val descriptor: SerialDescriptor =
@@ -65,7 +61,6 @@ object ModalSerializer : KSerializer<Modal?> {
 }
 
 @ExperimentalSerializationApi
-@Serializer(forClass = Slide::class)
 object SlideSerializer : KSerializer<Slide?> {
 
     override val descriptor: SerialDescriptor =
@@ -76,7 +71,6 @@ object SlideSerializer : KSerializer<Slide?> {
             element<String?>("altText")
         }
 
-    @OptIn(InternalAPI::class)
     override fun serialize(encoder: Encoder, value: Slide?) {
         if (value == null) {
             encoder.encodeNull()
@@ -89,7 +83,9 @@ object SlideSerializer : KSerializer<Slide?> {
                     if (value.description != null) "slideDescription" to value.description else null,
                     when (value.image) {
                         is SlideImageDl -> {
-                            "slideImage" to Json.encodeToJsonElement(value.image.slideImage.encodeBase64())
+                            "slideImage" to Json.encodeToJsonElement(
+                                java.util.Base64.getEncoder().encodeToString(value.image.slideImage)
+                            )
                         }
                         else -> null
                     },

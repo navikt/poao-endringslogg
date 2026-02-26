@@ -3,9 +3,11 @@ package no.pto.database
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import no.pto.env.*
-import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.javatime.timestamp
-import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.v1.core.*
+import org.jetbrains.exposed.v1.core.java.*
+import org.jetbrains.exposed.v1.javatime.timestamp
+import org.jetbrains.exposed.v1.jdbc.*
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import java.security.MessageDigest
 import java.time.*
 import java.time.temporal.ChronoUnit
@@ -20,7 +22,7 @@ fun sha256(userId: String): String {
 
 object Seen : Table("seen") {
     val userId = varchar("user_id", 255)
-    val documentId = uuid("document_id")
+    val documentId = javaUUID("document_id")
     val appId = varchar("app_id", 255)
     val openedLink = bool("opened_link").default(false) // TODO: vurder å slett felter
     val openedModal = bool("opened_modal").default(false) // TODO: vurder å slett felter
@@ -30,7 +32,7 @@ object Seen : Table("seen") {
 
 object SeenForced: Table("seen_forced") {
     val userId = varchar("user_id", 255)
-    val documentId = uuid("document_id")
+    val documentId = javaUUID("document_id")
     override val primaryKey = PrimaryKey(userId, documentId)
 }
 

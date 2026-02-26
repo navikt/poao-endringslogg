@@ -27,7 +27,7 @@ class SanityListeningClient<V : Any>(
         val eventSource: BackgroundEventSource = BackgroundEventSource.Builder(
             eventHandler,
             EventSource.Builder(HttpConnectStrategy.http(URI.create(listenUrl))
-            .readTimeout(3000, TimeUnit.MILLISECONDS)))
+            .readTimeout(5, TimeUnit.MINUTES)))
             .connectionErrorHandler(SanityConnectionErrorHandler())
             .build()
 

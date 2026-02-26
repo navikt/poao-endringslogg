@@ -53,8 +53,6 @@ fun Application.configureEndringsloggRouting(client: SanityClient) {
                             )
                         )
                     }
-
-                    else -> {}
                 }
             }
         }
