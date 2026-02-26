@@ -27,6 +27,10 @@ spec:
         databases:
           - envVarPrefix: DB
             name: endringslogg
+  liveness:
+    path: /internal/isAlive
+  readiness:
+    path: /internal/isReady
   replicas:
     min: 1
     max: 2

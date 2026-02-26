@@ -8,6 +8,8 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.CORS
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import kotlinx.serialization.json.Json
 import no.pto.config.Every
 import no.pto.config.Scheduler
@@ -71,5 +73,9 @@ fun main() {
         main()
         configureEndringsloggRouting(client)
         configureSystemmeldingRouting(client)
+        routing {
+            get("/internal/isAlive") { call.respondText("OK") }
+            get("/internal/isReady") { call.respondText("OK") }
+        }
     }.start(wait = true)
 }
