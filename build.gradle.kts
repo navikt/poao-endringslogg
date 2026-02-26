@@ -6,9 +6,9 @@ val logstash_encoder_version: String by project
 
 plugins {
     application
-    kotlin("plugin.serialization") version "2.1.20"
-    kotlin("jvm") version "2.1.10"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    kotlin("plugin.serialization") version "2.3.10" // Må være samme versjon som kotlin plugin
+    kotlin("jvm") version "2.3.10"
+    id("com.gradleup.shadow") version "8.3.6"
 }
 
 group = "no.nav.pto"
@@ -39,10 +39,10 @@ dependencies {
     implementation("org.postgresql:postgresql:42.7.10")
     implementation("org.flywaydb:flyway-core:12.0.1")
     implementation("org.flywaydb:flyway-database-postgresql:12.0.1")
-    implementation("com.github.ben-manes.caffeine:caffeine:3.2.0")
-    implementation("com.launchdarkly:okhttp-eventsource:4.1.1")
+    implementation("com.github.ben-manes.caffeine:caffeine:3.2.3")
+    implementation("com.launchdarkly:okhttp-eventsource:4.2.0")
     implementation("com.zaxxer:HikariCP:7.0.2")
-    testImplementation("io.ktor:ktor-server-tests:$ktor_version")
+    testImplementation("io.ktor:ktor-server-test-host:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
 }
 

@@ -38,8 +38,6 @@ fun Application.configureSystemmeldingRouting(client: SanityClient) {
                         )
                     )
                 }
-
-                else -> {}
             }
         }
     }
