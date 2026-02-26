@@ -8,7 +8,7 @@ plugins {
     application
     kotlin("plugin.serialization") version kotlinVersion
     kotlin("jvm") version kotlinVersion
-    id("com.gradleup.shadow") version "8.3.6"
+    id("com.gradleup.shadow") version "9.3.1"
 }
 
 group = "no.nav.pto"
@@ -49,6 +49,7 @@ dependencies {
 tasks{
     shadowJar {
         mergeServiceFiles()
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
         manifest {
             attributes(Pair("Main-Class", "no.pto.ApplicationKt"))
         }
