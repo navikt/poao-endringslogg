@@ -62,6 +62,18 @@ data class BrukerData(
 )
 
 @Serializable
+data class HarUlesteRequest(
+    val userId: String,
+    val appId: String
+)
+
+@Serializable
+data class HarUlesteResponse(
+    val antallUleste: Int,
+    val harUlestForcedModal: Boolean
+)
+
+@Serializable
 data class SeenStatus(
     val userId: String,
     val appId: String,

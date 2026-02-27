@@ -18,6 +18,15 @@ import kotlin.math.min
 val logger: Logger = LoggerFactory.getLogger("no.nav.pto.endringlogg.routing")
 val endringsloggPoaoqQuery: String = getEndringsloggPoaoQuery()
 
+data class UserSeenStatus(val seenEntryIds: Set<String>, val seenForcedEntryIds: Set<String>)
+
+fun getSeenStatusForUser(userId: String): UserSeenStatus {
+    return UserSeenStatus(
+        seenEntryIds = getSeenEntriesForUser(userId).map(UUID::toString).toSet(),
+        seenForcedEntryIds = getSeenForcedEntriesForUser(userId).map(UUID::toString).toSet()
+    )
+}
+
 fun Application.configureEndringsloggRouting(client: SanityClient) {
     routing {
         post("/endringslogg") {
@@ -25,8 +34,7 @@ fun Application.configureEndringsloggRouting(client: SanityClient) {
             if (appId != "afolg") {
                 call.respond(HttpStatusCode.NotImplemented)
             } else {
-                val seenEntryIds = getSeenEntriesForUser(userId).map(UUID::toString).toSet()
-                val seenForcedEntryIds = getSeenForcedEntriesForUser(userId).map(UUID::toString).toSet()
+                val (seenEntryIds, seenForcedEntryIds) = getSeenStatusForUser(userId)
 
                 when (val endringslogger = client.queryEndringslogg(endringsloggPoaoqQuery)) {
                     is Ok -> {
@@ -46,6 +54,31 @@ fun Application.configureEndringsloggRouting(client: SanityClient) {
                     }
                     is Err -> {
                         logger.info("Got a client request exception with error code ${endringslogger.error.response.status.value} and message ${endringslogger.error.message}")
+                        call.response.status(
+                            HttpStatusCode(
+                                endringslogger.error.response.status.value,
+                                "Received error: ${endringslogger.error.message}"
+                            )
+                        )
+                    }
+                }
+            }
+        }
+        post("/endringslogg/har-uleste") {
+            val (userId: String, appId: String) = call.receive<HarUlesteRequest>()
+            if (appId != "afolg") {
+                call.respond(HttpStatusCode.NotImplemented)
+            } else {
+                when (val endringslogger = client.queryEndringslogg(endringsloggPoaoqQuery)) {
+                    is Ok -> {
+                        val (seenEntryIds, seenForcedEntryIds) = getSeenStatusForUser(userId)
+                        val unseenEntries = endringslogger.value.result.filter { it.id !in seenEntryIds }
+                        val harUlestForcedModal = unseenEntries.any {
+                            it.modal?.forcedModal == true && it.id !in seenForcedEntryIds
+                        }
+                        call.respond(HarUlesteResponse(unseenEntries.size, harUlestForcedModal))
+                    }
+                    is Err -> {
                         call.response.status(
                             HttpStatusCode(
                                 endringslogger.error.response.status.value,
