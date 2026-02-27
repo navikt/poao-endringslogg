@@ -39,10 +39,8 @@ fun Application.configureEndringsloggRouting(client: SanityClient) {
                 when (val endringslogger = client.queryEndringslogg(endringsloggPoaoqQuery)) {
                     is Ok -> {
                         if (endringslogger.value.result.isEmpty()) {
-                            logger.info("status=204, method=GET, /endringslogg, fant ingen endringslogger")
                             call.response.status(HttpStatusCode(204, "Data for app $appId doesn't exist."))
                         } else {
-                            logger.info("status=200, method=GET, /endringslogg, {} endringslogger.", endringslogger.value.result.size)
                             call.respond(endringslogger.value.result.map {
                                 it.copy(
                                     seen = it.id in seenEntryIds,
@@ -53,7 +51,7 @@ fun Application.configureEndringsloggRouting(client: SanityClient) {
                         }
                     }
                     is Err -> {
-                        logger.info("Got a client request exception with error code ${endringslogger.error.response.status.value} and message ${endringslogger.error.message}")
+                        logger.warn("Feil fra Sanity: {} {}", endringslogger.error.response.status.value, endringslogger.error.message)
                         call.response.status(
                             HttpStatusCode(
                                 endringslogger.error.response.status.value,
