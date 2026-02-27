@@ -101,13 +101,13 @@ class SanityListeningClient<V : Any>(
     }
 }
 
-/* Shuts down connection when connection attempt fails*/
 private class SanityConnectionErrorHandler : ConnectionErrorHandler {
     override fun onConnectionError(t: Throwable?): ConnectionErrorHandler.Action {
-        return if (t is StreamResetException) { // to handle stream resets every 30 minutes
-            ConnectionErrorHandler.Action.PROCEED
+        if (t is StreamResetException) {
+            logger.info("Stream mot Sanity ble resatt, kobler til på nytt")
         } else {
-            ConnectionErrorHandler.Action.SHUTDOWN
+            logger.warn("Tilkoblingsfeil mot Sanity, kobler til på nytt", t)
         }
+        return ConnectionErrorHandler.Action.PROCEED
     }
 }
