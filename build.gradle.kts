@@ -8,7 +8,7 @@ plugins {
     application
     kotlin("plugin.serialization") version kotlinVersion
     kotlin("jvm") version kotlinVersion
-    id("com.gradleup.shadow") version "9.3.1"
+    id("com.gradleup.shadow") version "9.3.2"
 }
 
 group = "no.nav.pto"
