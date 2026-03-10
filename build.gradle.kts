@@ -1,4 +1,4 @@
-val exposedVersion = "1.0.0"
+val exposedVersion = "1.1.1"
 val ktorVersion = "3.4.0"
 val logbackVersion = "1.5.3"
 val logstashEncoderVersion = "7.4"
