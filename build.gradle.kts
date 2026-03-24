@@ -4,7 +4,7 @@ val logbackVersion = "1.5.3"
 val logstashEncoderVersion = "7.4"
 
 plugins {
-    val kotlinVersion = "2.3.10"
+    val kotlinVersion = "2.3.20"
     application
     kotlin("plugin.serialization") version kotlinVersion
     kotlin("jvm") version kotlinVersion
