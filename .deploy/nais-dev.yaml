@@ -2,11 +2,11 @@ apiVersion: "nais.io/v1alpha1"
 kind: "Application"
 metadata:
   name: endringslogg
-  namespace: pto
+  namespace: obo
   labels:
-    team: pto
+    team: obo
 spec:
-  image: {{image}}
+  image: { { image } }
   azure:
     application:
       enabled: true
