@@ -37,7 +37,7 @@ object SeenForced: Table("seen_forced") {
 }
 
 fun connectToDatabase() {
-    val connectUrl = "jdbc:postgresql://$DB_HOST:$DB_PORT/$DB_DATABASE?reWriteBatchedInserts=true?sslmode=require"
+    val connectUrl = "jdbc:postgresql://$DB_HOST:$DB_PORT/$DB_DATABASE?reWriteBatchedInserts=true&sslmode=require"
 
     val config = HikariConfig().apply {
         jdbcUrl = connectUrl
