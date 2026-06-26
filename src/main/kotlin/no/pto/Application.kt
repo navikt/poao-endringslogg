@@ -58,9 +58,9 @@ fun main() {
     "jdbc:postgresql://$DB_HOST:$DB_PORT/$DB_DATABASE" +
         "?reWriteBatchedInserts=true" +
         "&sslmode=require" +
-        "&sslcert=/var/run/secrets/nais.io/sqlcertificate/client.crt" +
-        "&sslkey=/var/run/secrets/nais.io/sqlcertificate/client.pk8" +
-        "&sslrootcert=/var/run/secrets/nais.io/sqlcertificate/server.crt"
+        "&sslcert=/var/run/secrets/nais.io/sqlcertificate/tls.crt" +
+        "&sslkey=/var/run/secrets/nais.io/sqlcertificate/tls.key" +
+        "&sslrootcert=/var/run/secrets/nais.io/sqlcertificate/ca.crt"
     
     val flyway: Flyway = Flyway.configure().dataSource(
         connectUrl,
