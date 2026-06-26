@@ -37,7 +37,13 @@ object SeenForced: Table("seen_forced") {
 }
 
 fun connectToDatabase() {
-    val connectUrl = "jdbc:postgresql://$DB_HOST:$DB_PORT/$DB_DATABASE?reWriteBatchedInserts=true&sslmode=require"
+    val connectUrl =
+    "jdbc:postgresql://$DB_HOST:$DB_PORT/$DB_DATABASE" +
+        "?reWriteBatchedInserts=true" +
+        "&sslmode=require" +
+        "&sslcert=/var/run/secrets/nais.io/sqlcertificate/client.crt" +
+        "&sslkey=/var/run/secrets/nais.io/sqlcertificate/client.pk8" +
+        "&sslrootcert=/var/run/secrets/nais.io/sqlcertificate/server.crt"
 
     val config = HikariConfig().apply {
         jdbcUrl = connectUrl
