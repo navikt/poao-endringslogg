@@ -19,6 +19,7 @@ import no.pto.plugins.*
 import org.flywaydb.core.Flyway
 import org.slf4j.LoggerFactory
 import java.util.concurrent.TimeUnit
+import java.io.File
 
 private val logger = LoggerFactory.getLogger("no.nav.pto.endringslogg.Application")
 private val client = SanityClient(SANITY_PROJECT_ID, API_VERSION_ENDRINGSLOGG)
@@ -53,6 +54,12 @@ fun Application.main() {
 
 fun main() {
     logger.info("Kjører flyway")
+
+    File("/var/run/secrets/nais.io/sqlcertificate")
+        .listFiles()
+        ?.forEach {
+            logger.info("SQL cert file: ${it.name}")
+        }
     
     val connectUrl =
     "jdbc:postgresql://$DB_HOST:$DB_PORT/$DB_DATABASE" +
