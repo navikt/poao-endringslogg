@@ -42,6 +42,7 @@ dependencies {
     implementation("com.github.ben-manes.caffeine:caffeine:3.2.3")
     implementation("com.launchdarkly:okhttp-eventsource:4.3.0")
     implementation("com.zaxxer:HikariCP:7.1.0")
+    implementation(platform("tools.jackson:jackson-bom:3.2.3")) // brukes av logstash, men setter versjon her for å unngå høy sårbarhet
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     testImplementation(kotlin("test"))
 }
