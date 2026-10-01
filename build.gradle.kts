@@ -1,6 +1,6 @@
 val exposedVersion = "1.3.1"
 val ktorVersion = "3.6.0"
-val logbackVersion = "1.6.1"
+val logbackVersion = "1.6.3"
 val logstashEncoderVersion = "9.0"
 
 plugins {
