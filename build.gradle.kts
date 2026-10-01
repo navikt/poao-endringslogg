@@ -1,7 +1,7 @@
-val exposedVersion = "1.0.0"
+val exposedVersion = "1.3.1"
 val ktorVersion = "3.5.1"
-val logbackVersion = "1.5.3"
-val logstashEncoderVersion = "7.4"
+val logbackVersion = "1.6.1"
+val logstashEncoderVersion = "9.0"
 
 plugins {
     val kotlinVersion = "2.3.10"
@@ -40,7 +40,7 @@ dependencies {
     implementation("org.flywaydb:flyway-core:12.0.1")
     implementation("org.flywaydb:flyway-database-postgresql:12.0.1")
     implementation("com.github.ben-manes.caffeine:caffeine:3.2.3")
-    implementation("com.launchdarkly:okhttp-eventsource:4.2.0")
+    implementation("com.launchdarkly:okhttp-eventsource:4.3.0")
     implementation("com.zaxxer:HikariCP:7.0.2")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     testImplementation(kotlin("test"))
