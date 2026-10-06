@@ -39,7 +39,7 @@ dependencies {
     implementation("org.postgresql:postgresql:42.7.10")
     implementation("org.flywaydb:flyway-core:13.0.0")
     implementation("org.flywaydb:flyway-database-postgresql:13.0.0")
-    implementation("com.github.ben-manes.caffeine:caffeine:3.2.3")
+    implementation("com.github.ben-manes.caffeine:caffeine:3.3.0")
     implementation("com.launchdarkly:okhttp-eventsource:4.3.0")
     implementation("com.zaxxer:HikariCP:7.1.0")
     implementation(platform("tools.jackson:jackson-bom:3.2.3")) // brukes av logstash, men setter versjon her for å unngå høy sårbarhet
